@@ -1,0 +1,8 @@
+
+
+spring:
+  application:
+    name: NUTRITION-SERVICE
+  config:
+    import: optional:configserver:http://localhost:8071
+

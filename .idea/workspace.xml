@@ -4,7 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4af1af57-fb37-4dd7-81a2-5fa1ad360cbe" name="Changes" comment="" />
+    <list default="true" id="4af1af57-fb37-4dd7-81a2-5fa1ad360cbe" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/terraform/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/alb.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/ecr.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/ecs-services.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/ecs.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/locals.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/outputs.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/providers.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/security_groups.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/taskDefination.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/variables.tf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/terraform/vpc.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/darwin_arm64/LICENSE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/darwin_arm64/LICENSE.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/darwin_arm64/terraform-provider-aws_v5.100.0_x5" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/darwin_arm64/terraform-provider-aws_v5.100.0_x5" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

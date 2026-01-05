@@ -13,32 +13,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
 
-    @Value("${rabbitmq.exchange.name}")
-    private String exchange;
-
-    @Value("${rabbitmq.queue.name}")
-    private String queue;
-
-    @Value("${rabbitmq.routing.key}")
-    private String routingKey;
+    public static final String ACTIVITY_EXCHANGE = "activity.exchange";
+    public static final String ACTIVITY_DELETED_ROUTING_KEY = "activity.deleted";
 
     @Bean
-    public Queue activityQueue(){
-        return new Queue(queue, true);
+    public DirectExchange activityExchange() {
+        return new DirectExchange(ACTIVITY_EXCHANGE);
     }
 
     @Bean
-    public DirectExchange activityExchange(){
-        return new DirectExchange(exchange);
-    }
-
-    @Bean
-    public Binding activityBinding(Queue activityQueue, DirectExchange activityExchange){
-        return BindingBuilder.bind(activityQueue).to(activityExchange).with(routingKey);
-    }
-
-    @Bean
-    public MessageConverter jsonMessageConverter(){
+    public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 }

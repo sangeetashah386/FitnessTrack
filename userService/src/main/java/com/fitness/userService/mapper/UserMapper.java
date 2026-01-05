@@ -15,7 +15,7 @@ public class UserMapper {
         user.setKeycloakId(request.getKeycloakId());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setPassword(request.getPassword());
+       // user.setPassword(request.getPassword());
         return user;
     }
 

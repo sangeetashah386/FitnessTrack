@@ -22,6 +22,12 @@ public class RabbitMqConfig {
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
 
+    @Value("${rabbitmq.delete.queue}")
+    private String deleteQueue;
+
+    @Value("${rabbitmq.delete.routing.key}")
+    private String deleteRoutingKey;
+
     @Bean
     public Queue activityQueue(){
         return new Queue(queue, true);
@@ -33,8 +39,20 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    public Queue activityDeleteQueue() {
+        return new Queue(deleteQueue, true);
+    }
+
+    @Bean
     public Binding activityBinding(Queue activityQueue, DirectExchange activityExchange){
         return BindingBuilder.bind(activityQueue).to(activityExchange).with(routingKey);
+    }
+
+    @Bean
+    public Binding deleteBinding(Queue activityDeleteQueue, DirectExchange activityExchange) {
+        return BindingBuilder.bind(activityDeleteQueue)
+                .to(activityExchange)
+                .with(deleteRoutingKey);
     }
 
     @Bean

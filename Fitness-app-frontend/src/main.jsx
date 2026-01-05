@@ -10,10 +10,20 @@ import App from './App';
 // As of React 18
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <AuthProvider authConfig={authConfig}
-                loadingComponent={<div>Loading...</div>}>
-    <Provider store={store}>
+  <Provider store={store}>
+    <AuthProvider authConfig={authConfig}
+                  loadingComponent={<div>Loading...</div>}>
       <App />
-    </Provider>
-  </AuthProvider>,
-)
+    </AuthProvider>
+  </Provider>
+);
+
+
+// root.render(
+//   <AuthProvider authConfig={authConfig}
+//                 loadingComponent={<div>Loading...</div>}>
+//     <Provider store={store}>
+//       <App />
+//     </Provider>
+//   </AuthProvider>,
+// )

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { getActivityRecommendation } from "../services/api";
+import { getActivityRecommendation, deleteRecommendationByActivityId } from "../services/api";
 import {
   Box,
   Typography,
@@ -20,11 +20,7 @@ const RecommendationDetail = () => {
   useEffect(() => {
     const fetchRecommendationDetail = async () => {
       try {
-        console.log("📡 Fetching recommendation for activity:", activityId);
         const res = await getActivityRecommendation(activityId);
-        console.log("✅ Raw API response:", res.data);
-
-        // 👇 Store entire object (we’ll extract fields safely below)
         setRecommendation(res.data);
       } catch (error) {
         console.error("❌ Error fetching recommendation:", error);
@@ -35,6 +31,19 @@ const RecommendationDetail = () => {
 
     if (activityId) fetchRecommendationDetail();
   }, [activityId]);
+
+  const handleDeleteRecommendation = async () => {
+    if (!window.confirm("Are you sure you want to delete this recommendation?")) return;
+
+    try {
+      const res = await deleteRecommendationByActivityId(activityId);
+      alert(res.data); // Message from backend
+      navigate("/recommendations"); // Go back to list page
+    } catch (err) {
+      console.error("❌ Failed to delete:", err);
+      alert("Failed to delete recommendation.");
+    }
+  };
 
   if (loading)
     return (
@@ -49,26 +58,26 @@ const RecommendationDetail = () => {
         <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)} sx={{ mb: 3 }}>
           Back
         </Button>
-        <Typography color="error">No recommendation data found.</Typography>
+        <Typography color="error">No recommendation found.</Typography>
       </Box>
     );
 
-  // 🧠 Flexible extractor for Gemini & flat responses
   const extractText = (data) => {
     if (!data) return "";
     if (data.recommendation) return data.recommendation;
     if (data.description) return data.description;
     if (data.content) return data.content;
     if (data.text) return data.text;
+
     if (Array.isArray(data.candidates)) {
-      const candidate = data.candidates[0];
+      const c = data.candidates[0];
       return (
-        candidate?.content?.parts?.[0]?.text ||
-        candidate?.content?.[0]?.text ||
+        c?.content?.parts?.[0]?.text ||
+        c?.content?.[0]?.text ||
         ""
       );
     }
-    if (data.parts) return data.parts[0]?.text;
+
     return "";
   };
 
@@ -76,7 +85,6 @@ const RecommendationDetail = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      {/* 🔙 Back button */}
       <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)} sx={{ mb: 3 }}>
         Back
       </Button>
@@ -87,10 +95,9 @@ const RecommendationDetail = () => {
         </Typography>
 
         <Typography variant="body1" mb={2} sx={{ whiteSpace: "pre-line" }}>
-          {mainText || "No detailed description provided by Gemini API."}
+          {mainText || "No description available."}
         </Typography>
 
-        {/* Optional extra fields */}
         {recommendation.improvements && (
           <>
             <Divider sx={{ my: 2 }} />
@@ -126,6 +133,16 @@ const RecommendationDetail = () => {
             </Typography>
           </>
         )}
+
+        {/* ⭐ DELETE BUTTON */}
+        <Button
+          variant="outlined"
+          color="error"
+          sx={{ mt: 3 }}
+          onClick={handleDeleteRecommendation}
+        >
+          Delete Recommendation
+        </Button>
       </Paper>
     </Box>
   );

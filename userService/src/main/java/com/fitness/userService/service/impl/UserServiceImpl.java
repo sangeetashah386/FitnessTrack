@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.xml.validation.Validator;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final ActivityFeignClient client;
 
+
     @Override
     public UserResponse register(RegisterRequest request) {
         log.info("Received registration request for email: {}, keycloakId: {}", request.getEmail(), request.getKeycloakId());
@@ -35,24 +37,33 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Keycloak ID is required");
         }
 
-         if (repository.existsByEmail(request.getEmail())){
-        //     throw new RuntimeException("Email already exists");
+//        return repository.findByKeycloakId(request.getKeycloakId())
+//                .map(existingUser -> {
+//                    log.info("User already exists with keycloakId={}", request.getKeycloakId());
+//                    return userMapper.toResponse(existingUser);
+//                })
+//                .orElseGet(() -> {
+//                    log.info("Creating new user from Keycloak");
+//
+//                    User user = userMapper.toEntity(request);
+//
+//                    // safety defaults
+//                    if (user.getFirstName() == null) user.setFirstName("User");
+//
+//                    User savedUser = repository.save(user);
+//
+//                    log.info("User created with id={}", savedUser.getId());
+//                    return userMapper.toResponse(savedUser);
+//                });
+//        }
 
-        User existingUser = repository.findByEmail(request.getEmail());
-             log.info("Returning existing user with ID: {}", existingUser.getId());
+         if (repository.existsByEmail(request.getEmail())) {
+             //     throw new RuntimeException("Email already exists");
 
-        UserResponse response = new UserResponse();
-        response.setId(existingUser.getId());
-        response.setFirstName(existingUser.getFirstName());
-        response.setLastName(existingUser.getLastName());
-        response.setKeycloakId(existingUser.getKeycloakId());
-        response.setEmail(existingUser.getEmail());
-        response.setPhone(existingUser.getPhone());
-       // response.setPassword(existingUser.getPassword());
-        response.setCreatedAt(existingUser.getCreatedAt());
-        response.setUpdatedAt(existingUser.getUpdatedAt());
-        return response;
-    }
+             User existingUser = repository.findByEmail(request.getEmail());
+             log.info("User already exits. Returning existing user with ID: {}", existingUser.getId());
+             return userMapper.toResponse(existingUser);
+         }
         log.info("Creating new user entity from request");
         User user = userMapper.toEntity(request);
 
@@ -61,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
         log.info("User successfully registered with ID: {}", savedUser.getId());
         return userMapper.toResponse(savedUser);
-    }
+        }
 
 
     @Override

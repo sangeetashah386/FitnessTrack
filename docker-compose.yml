@@ -1,0 +1,353 @@
+version: "3.9"
+
+services:
+
+  # MYSQL DATABASE
+
+  mysql:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: mysql
+    env_file:
+      - ./env/secrets.env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - fittrack-net
+
+  # =======================
+  # MONGODB
+  # =======================
+  mongodb:
+    image: mongo:6
+    platform: linux/amd64
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - fittrack-net
+
+  #Postgres for keycloak
+  keycloak-postgres:
+    image: postgres:15
+    platform: linux/amd64
+    container_name: keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    ports:
+      - "5450:5432"
+    volumes:
+      - keycloak_pgdata:/var/lib/postgresql/data
+    networks:
+      - fittrack-net
+
+  # =======================
+  # RABBITMQ
+  # =======================
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    platform: linux/amd64
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - fittrack-net
+
+  # =======================
+  # KEYCLOAK
+  # =======================
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    platform: linux/amd64
+    container_name: keycloak
+    command:
+      - start-dev --features=preview
+      - --hostname-strict=false
+      - --hostname-strict-https=false
+      - --hostname=localhost
+      - --http-port=8080
+
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloak
+      KC_IMPORT: /opt/keycloak/data/import/realm-export.json
+    volumes:
+      - ./keycloak-export:/opt/keycloak/data/import
+    ports:
+      - "8181:8080"
+    networks:
+      - fittrack-net
+    depends_on:
+      - keycloak-postgres
+
+  # =======================
+  # CONFIG SERVER
+  # =======================
+  config-server:
+    build: ./configserver
+    platform: linux/amd64
+    container_name: config-server
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+    ports:
+      - "8071:8071"
+    networks:
+      - fittrack-net
+    depends_on:
+      - mysql
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8071/actuator/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # =======================
+  # EUREKA SERVER
+  # =======================
+  eureka-server:
+    build: ./eureka
+    platform: linux/amd64
+    container_name: eureka-server
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: eureka-server
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8071
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8071/
+    ports:
+      - "8761:8761"
+    networks:
+      fittrack-net:
+    depends_on:
+      config-server:
+        condition: service_started
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # =======================
+  # USER SERVICE
+  # =======================
+  user-service:
+    build: ./userService
+    platform: linux/amd64
+    image: user-server
+    container_name: user-service
+    env_file:
+      - ./env/secrets.env
+    environment:
+      SPRING_APPLICATION_NAME: user-service
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8071
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+
+      SPRING_RABBITMQ_HOST: rabbitmq
+      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080/realms/fitness-oauth2
+    ports:
+      - "8081:8081"
+    networks:
+      - fittrack-net
+    depends_on:
+      mysql:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+
+  # =======================
+  # ACTIVITY SERVICE
+  # =======================
+  activity-service:
+    build: ./activityService
+    platform: linux/amd64
+    image: activity-service
+    container_name: activity-service
+    env_file:
+      - ./env/secrets.env
+    environment:
+      SPRING_APPLICATION_NAME: activity-service
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8071
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+
+      SPRING_RABBITMQ_HOST: rabbitmq
+      RABBITMQ_QUEUE_NAME: activity.queue
+      RABBITMQ_EXCHANGE_NAME: fitness.exchange
+      RABBITMQ_ROUTING_KEY: activity.routing
+
+      # Delete event configs
+      RABBITMQ_DELETE_QUEUE: activity.deleted.queue
+      RABBITMQ_DELETE_ROUTING_KEY: activity.deleted
+    ports:
+      - "8082:8082"
+    networks:
+      - fittrack-net
+    depends_on:
+      mysql:
+        condition: service_started         # Don't wait for MySQL healthcheck
+      rabbitmq:
+        condition: service_started         # RabbitMQ usually doesn't need healthcheck
+      config-server:
+        condition: service_healthy         # MUST be fully healthy before other services start
+      eureka-server:
+        condition: service_healthy
+
+  # =======================
+  # NUTRITION SERVICE
+  # =======================
+  nutrition-service:
+    build: ./nutritionService
+    platform: linux/amd64
+    image: nutrition-service
+    container_name: nutrition-service
+    env_file:
+      - ./env/secrets.env
+    environment:
+      SPRING_APPLICATION_NAME: nutrition-service
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8071
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/nutritiondb
+      SPRING_RABBITMQ_HOST: rabbitmq
+      RABBITMQ_QUEUE_NAME: nutrition.queue
+      RABBITMQ_EXCHANGE_NAME: fitness.exchange
+      RABBITMQ_ROUTING_KEY: nutrition.tracking
+
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_API_URL: ${GEMINI_API_URL}
+    ports:
+      - "8083:8083"
+    networks:
+      - fittrack-net
+    depends_on:
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  # =======================
+  # RECOMMENDATION SERVICE
+  # =======================
+  recommendation-service:
+    build: ./recommendationService
+    image: recommendation-service
+    platform: linux/amd64
+    container_name: recommendation-service
+    env_file:
+      - ./env/secrets.env
+    environment:
+      SPRING_APPLICATION_NAME: recommendation-service
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8071
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/recommendationdb
+      SPRING_RABBITMQ_HOST: rabbitmq
+
+      RABBITMQ_EXCHANGE_NAME: fitness.exchange
+      RABBITMQ_QUEUE_NAME: activity.queue
+      RABBITMQ_ROUTING_KEY: activity.tracking
+
+      # Delete tracking
+      RABBITMQ_DELETE_QUEUE: activity.deleted.queue
+      RABBITMQ_DELETE_ROUTING_KEY: activity.deleted
+
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_API_URL: ${GEMINI_API_URL}
+    ports:
+      - "8084:8084"
+    networks:
+      - fittrack-net
+    depends_on:
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  # =======================
+  # API GATEWAY
+  # =======================
+  api-gateway:
+    build: ./gateway
+    image: api-gateway
+    platform: linux/amd64
+    container_name: api-gateway
+    environment:
+      SPRING_APPLICATION_NAME: api-gateway
+      SPRING_CLOUD_CONFIG_URI: http://config-server:8071
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080/realms/fitness-oauth2
+    ports:
+      - "8080:8080"
+    networks:
+      - fittrack-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+# Frontend
+  frontend:
+    build: ./Fitness-app-frontend
+    image: frontend
+    platform: linux/amd64
+    container_name: frontend
+    ports:
+      - "5173:80"
+    networks:
+      - fittrack-net
+    depends_on:
+      - api-gateway
+
+
+# =======================
+# VOLUMES
+# =======================
+volumes:
+  mysql_data:
+  mongo_data:
+  keycloak_pgdata:
+
+# =======================
+# NETWORK
+# =======================
+networks:
+  fittrack-net:
+    external: true

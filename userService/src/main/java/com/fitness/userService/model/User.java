@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @UuidGenerator
     private String id;
 
     private String firstName;
@@ -29,8 +30,8 @@ public class User {
     @Column(unique = true, nullable = false)
     private String phone;
 
-    @Column( nullable = false)
-    private String password;
+//    @Column( nullable = false)
+//    private String password;
 
     @Enumerated(EnumType.STRING)
     private UserRole role= UserRole.USER;

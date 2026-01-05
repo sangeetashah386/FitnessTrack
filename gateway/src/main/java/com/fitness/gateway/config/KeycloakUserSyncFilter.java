@@ -12,7 +12,6 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
-
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -24,10 +23,13 @@ public class KeycloakUserSyncFilter implements WebFilter {
         String path = exchange.getRequest().getURI().getPath();
 
         // ✅ Skip user sync unless hitting Keycloak or registration endpoints
-        if (!path.contains("/api/users/register") &&
-                !path.contains("/protocol/openid-connect") &&
-                !path.contains("/token")) {
-            // Just forward everything else to downstream services
+//        if (!path.contains("/api/users/register") &&
+//                !path.contains("/protocol/openid-connect") &&
+//                !path.contains("/token")) {
+//            // Just forward everything else to downstream services
+//            return chain.filter(exchange);
+//        }
+        if (!path.startsWith("/api/")) {
             return chain.filter(exchange);
         }
 
@@ -86,6 +88,10 @@ public class KeycloakUserSyncFilter implements WebFilter {
 
 
     private RegisterRequest getUserDetails(String token) {
+        if (token == null || token.isBlank()) {
+            log.warn("Authorization token is missing. Skipping user sync.");
+            return null;
+        }
         try{
             String tokenWithoutBearer = token.replace("Bearer ","").trim();
             SignedJWT signedJWT = SignedJWT.parse(tokenWithoutBearer);
@@ -109,14 +115,13 @@ public class KeycloakUserSyncFilter implements WebFilter {
             RegisterRequest registerRequest = new RegisterRequest();
             registerRequest.setFirstName(claims.getStringClaim("given_name"));
             registerRequest.setLastName(claims.getStringClaim("family_name"));
-            log.info("User not found. Registering new user: {}", registerRequest.getEmail());
             registerRequest.setEmail(claims.getStringClaim("email"));
             registerRequest.setKeycloakId(claims.getStringClaim("sub"));
             log.info("Extracted sub (keycloakId): {}", claims.getStringClaim("sub"));
 
             String phone = claims.getStringClaim("phone_number");
             registerRequest.setPhone(phone != null && !phone.isBlank() ? phone : "0000000000");
-            registerRequest.setPassword(claims.getStringClaim("password"));
+            // registerRequest.setPassword(claims.getStringClaim("password"));
             return registerRequest;
 
 //            log.info("Extracted user details from token - Email: {}, KeycloakId: {}", email, keycloakId);
@@ -131,3 +136,5 @@ public class KeycloakUserSyncFilter implements WebFilter {
     }
 
 }
+
+

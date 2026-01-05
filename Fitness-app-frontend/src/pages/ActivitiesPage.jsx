@@ -3,7 +3,7 @@ import { Box, Typography, Snackbar, Alert, Button } from "@mui/material";
 import ActivityForm from "../components/ActivityForm";
 import ActivityList from "../components/ActivityList";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const ActivitiesPage = () => {
   const [success, setSuccess] = useState(false);

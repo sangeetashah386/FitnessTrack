@@ -21,11 +21,16 @@ public class ActivityRecommendationService {
     private final GeminiService geminiService;
 
     public Recommendation generateRecommendation(Activity activity){
-        String prompt = createPromptForActivity(activity);
-        String aiResponse = geminiService.getAnswer(prompt);
-        log.info("RESPONSE FROM AI: {} ", aiResponse);
+        try {
+            String prompt = createPromptForActivity(activity);
+            String aiResponse = geminiService.getAnswer(prompt);
+            log.info("RESPONSE FROM AI: {} ", aiResponse);
 
-        return processAiResponse(activity,aiResponse);
+            return processAiResponse(activity, aiResponse);
+        }catch(Exception e){
+            log.error("Failed to generate recommendation for activity {}", activity.getId(), e);
+            return createDefaultRecommendation(activity);
+        }
 
     }
 

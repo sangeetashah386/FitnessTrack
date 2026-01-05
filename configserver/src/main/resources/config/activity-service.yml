@@ -4,9 +4,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/fitness-activity-db
-    username: root
-    password: Green&123
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -17,19 +17,20 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
 
   application:
-    name: ACTIVITY-SERVICE
+    name: activity-service
 
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka
   instance:
+#    hostname: eureka-server
     prefer-ip-address: false
     instance-id: ${spring.application.name}:${server.port}
 
@@ -40,5 +41,13 @@ rabbitmq:
     name: activity.queue
   routing:
     key: activity.tracking
+  delete:
+    queue: activity.deleted.queue
+    routingKey: activity.deleted
 
 
+#rabbitmq.exchange.name: fitness.exchange
+#rabbitmq.queue.name: activity.queue
+#rabbitmq.routing.key: activity.tracking
+#rabbitmq.delete.queue: activity.deleted.queue
+#rabbitmq.delete.routing.key: activity.deleted

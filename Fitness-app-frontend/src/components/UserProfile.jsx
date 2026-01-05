@@ -3,7 +3,7 @@ import {
   Box, Card, CardContent, Typography, Avatar, Button, Grid, CircularProgress, Snackbar, Alert
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { getUserProfile } from "../services/api";
 import { useSelector } from "react-redux";
 
@@ -15,6 +15,7 @@ const UserProfile = () => {
   const userId = useSelector((s) => s.auth.userId);
 
   useEffect(() => {
+    if (!userId) return;
     getUserProfile(userId).then((res) => setUser(res.data));
   }, [userId]);
 

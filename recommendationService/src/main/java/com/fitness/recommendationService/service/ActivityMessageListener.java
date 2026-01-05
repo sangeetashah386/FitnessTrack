@@ -20,11 +20,15 @@ public class ActivityMessageListener {
 
     @RabbitListener(queues = "activity.queue")
     public void processActivity(Activity activity){
-        log.info("Received activity for processing: {}", activity.getId());
+        try {
+            log.info("Received activity for processing: {}", activity.getId());
 
-        Recommendation recommendation = recommendationService.generateRecommendation(activity);
-        log.info("Generate Recommendation: {}", recommendationService.generateRecommendation(activity));
-        recommendationRepository.save(recommendation);
+            Recommendation recommendation = recommendationService.generateRecommendation(activity);
+            log.info("Generate Recommendation: {}", recommendation);
+            recommendationRepository.save(recommendation);
+        }catch(Exception e){
+            log.error("Skipping message due to AI failure", e);
+        }
 
     }
 }

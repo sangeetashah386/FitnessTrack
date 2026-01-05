@@ -7,4 +7,5 @@ import java.util.List;
 public interface RecommendationService {
      List<Recommendation> getUserRecommendation(String userId);
      Recommendation getActivityRecommendation(Long activityId);
+     void deleteByActivityId(Long activityId);
 }

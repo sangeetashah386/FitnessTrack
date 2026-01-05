@@ -94,14 +94,6 @@ const NutritionAiPlanDetail = () => {
       </Typography>
 
       <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-        <Button
-          variant="contained"
-          startIcon={<AutoFixHighIcon />}
-          onClick={handleRegenerate}
-          disabled={regenLoading}
-        >
-          {regenLoading ? "Regenerating…" : "Regenerate"}
-        </Button>
 
         <Button
           variant="outlined"

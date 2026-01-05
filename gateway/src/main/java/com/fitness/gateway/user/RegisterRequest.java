@@ -18,7 +18,7 @@ public class RegisterRequest {
     @Email(message="Invalid email format")
     private String email;
 
-    @NotEmpty(message = "Keycloak ID is required")
+    //@NotEmpty(message = "Keycloak ID is required")
     @JsonProperty("keycloakId")
     private String keycloakId;
 
@@ -26,8 +26,8 @@ public class RegisterRequest {
     @Pattern(regexp = "($|[0-9]{10})",message = "Phone number must be 10 digits")
     private String phone;
 
-    @NotEmpty(message="Password is required")
-    @Size(min=6, message="Password must have atleast of 6 characters")
-    private String password;
+//    @NotEmpty(message="Password is required")
+//    @Size(min=6, message="Password must have atleast of 6 characters")
+//    private String password;
 
 }

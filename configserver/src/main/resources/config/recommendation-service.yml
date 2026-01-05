@@ -4,20 +4,27 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/fitness-recommendation-db
-      database: fitness-recommendation-db
+     # uri: mongodb://localhost:27017/fitness-recommendation-db
+      uri: mongodb://mongodb:27017/recommendationdb
+
 
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+        concurrency: 1
+        max-concurrency: 1
 
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
   instance:
+#    hostname: eureka-server
     prefer-ip-address: false
     instance-id: ${spring.application.name}:${server.port}
 
@@ -28,6 +35,16 @@ rabbitmq:
     name: activity.queue
   routing:
     key: activity.tracking
+  delete:
+    queue: activity.deleted.queue
+    routing:
+      key: activity.deleted
+
+#rabbitmq.exchange.name: fitness.exchange
+#rabbitmq.queue.name: activity.queue
+#rabbitmq.routing.key: activity.tracking
+#rabbitmq.delete.queue: activity.deleted.queue
+#rabbitmq.delete.routing.key: activity.deleted
 
 gemini:
   api:

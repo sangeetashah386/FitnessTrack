@@ -4,23 +4,32 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/fitness-nutrition-db
+      #uri: mongodb://localhost:27017/fitness-nutrition-db
+      uri: ${SPRING_DATA_MONGODB_URI}
       database: fitness-nutrition-db
 
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
 
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://eureka-server:8761/eureka/
+#  instance:
+#    prefer-ip-address: false
+#    instance-id: ${spring.application.name}:${server.port}
+
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
   instance:
+#    hostname: eureka-server
     prefer-ip-address: false
     instance-id: ${spring.application.name}:${server.port}
-
 rabbitmq:
   exchange:
     name: nutrition.exchange

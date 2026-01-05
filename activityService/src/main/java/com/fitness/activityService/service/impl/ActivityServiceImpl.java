@@ -3,6 +3,8 @@ package com.fitness.activityService.service.impl;
 import com.fitness.activityService.config.UserFeignClient;
 import com.fitness.activityService.dto.ActivityRequest;
 import com.fitness.activityService.dto.ActivityResponse;
+import com.fitness.activityService.events.ActivityDeletedEvent;
+import com.fitness.activityService.events.ActivityEventPublisher;
 import com.fitness.activityService.exception.InvalidUserException;
 import com.fitness.activityService.mapper.ActivityMapper;
 import com.fitness.activityService.model.Activity;
@@ -27,12 +29,17 @@ public class ActivityServiceImpl implements ActivityService {
     private final ActivityMapper activityMapper;
     private final UserFeignClient client;
     private final RabbitTemplate rabbitTemplate;
+    private final ActivityEventPublisher publisher;
 
     @Value("${rabbitmq.exchange.name}")
     private String exchange;
 
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
+
+    @Value("${rabbitmq.delete.routing.key}")
+    private String deleteRoutingKey;
+
 
     @Override
     public ActivityResponse trackActivity(ActivityRequest request) {
@@ -42,7 +49,7 @@ public class ActivityServiceImpl implements ActivityService {
 //            throw new InvalidUserException(request.getUserId());
 //        }
         try {
-        boolean isValidUser = client.validateUser(request.getUserId());
+        boolean isValidUser = client.validateUser(request.getUserId()).getBody();
         if (!isValidUser) {
             throw new InvalidUserException("Invalid User ID: " + request.getUserId());
         }
@@ -78,6 +85,31 @@ public class ActivityServiceImpl implements ActivityService {
                 .orElseThrow(() ->new RuntimeException("Activity not found with id: " + activityId));
 
     }
+
+    @Override
+    public void deleteActivity(Long activityId) {
+        Activity activity = repository.findById(activityId)
+                .orElseThrow(() -> new RuntimeException("Activity not found with id: " + activityId));
+
+        // Delete from DB
+        repository.delete(activity);
+
+        log.info("Deleted activity with id {}", activityId);
+
+        //Publish delete event to RabbitMQ
+        try {
+            ActivityDeletedEvent event = new ActivityDeletedEvent(activityId);
+
+            rabbitTemplate.convertAndSend(exchange, deleteRoutingKey, event);
+
+            log.info("Published delete event for activity {}", activityId);
+
+        } catch (Exception e) {
+            log.error("Failed to publish delete event", e);
+        }
+    }
+
+
 
 
 }

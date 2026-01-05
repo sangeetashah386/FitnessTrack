@@ -17,13 +17,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-    private final WebClient userServiceWebClient;
+    private final WebClient.Builder userServiceWebClient;
 
     public Mono<Boolean> validateUser(String userId){
         log.info("Calling User Validation API for userId: {}", userId);
 
-            return userServiceWebClient.get()
-                    .uri("/api/users/{userId}/validate", userId)
+            return userServiceWebClient.build()
+                    .get()
+                    .uri("lb://user-service/api/users/{userId}/validate", userId)
                     .retrieve()
                     .bodyToMono(Boolean.class)
                     .onErrorResume(WebClientResponseException.class, e -> {
@@ -43,8 +44,9 @@ public class UserService {
         try {
             log.info("Received registration request for email: {}, keycloakId: {}", request.getEmail(), request.getKeycloakId());
             log.info("Calling User Registration API for email: {}", request.getEmail());
-            return userServiceWebClient.post()
-                    .uri("/api/users/register")
+            return userServiceWebClient.build()
+                    .post()
+                    .uri("lb://user-service/api/users/register")
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(UserResponse.class)

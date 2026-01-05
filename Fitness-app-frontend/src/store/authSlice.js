@@ -25,6 +25,12 @@ const authSlice = createSlice({
         localStorage.removeItem('user');
         localStorage.removeItem('userId');
 
+        document.cookie.split(";").forEach((cookie) => {
+          document.cookie =
+            cookie.trim().split("=")[0] +
+            "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+        });
+
       },
       
 

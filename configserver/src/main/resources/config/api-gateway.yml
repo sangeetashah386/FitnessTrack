@@ -1,32 +1,38 @@
 spring:
   application:
-    name: API-GATEWAY
+    name: api-gateway
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8181/realms/fitness-oauth2/protocol/openid-connect/certs
+          #issuer-uri: http://keycloak:8080/realms/fitness-oauth2
+          jwk-set-uri: http://keycloak:8080/realms/fitness-oauth2/protocol/openid-connect/certs
+
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
       routes:
         - id: USER-SERVICE
-          uri: lb://USER-SERVICE
+          uri: lb://user-service
           predicates:
             - Path=/api/users/**
 
 
         - id: ACTIVITY-SERVICE
-          uri: lb://ACTIVITY-SERVICE
+          uri: lb://activity-service
           predicates:
             - Path=/api/activities/**
 
         - id: RECOMMENDATION-SERVICE
-          uri: lb://RECOMMENDATION-SERVICE
+          uri: lb://recommendation-service
           predicates:
             - Path=/api/recommendations/**
 
         - id: nutrition-service
-          uri: http://localhost:8085
+          uri: lb://nutrition-service
           predicates:
             - Path=/api/nutrition/**, /api/nutritionRecommendations/**
 
@@ -36,9 +42,10 @@ server:
 
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
   instance:
-    prefer-ip-address: false
-    instance-id: ${spring.application.name}:${server.port}
+#    hostname: eureka-server
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}t}
 

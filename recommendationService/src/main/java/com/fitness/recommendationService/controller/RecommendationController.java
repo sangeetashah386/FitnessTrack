@@ -4,10 +4,7 @@ import com.fitness.recommendationService.model.Recommendation;
 import com.fitness.recommendationService.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,4 +25,11 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendationService.getActivityRecommendation(activityId));
 
     }
+
+    @DeleteMapping("/activity/{activityId}")
+    public ResponseEntity<String> deleteByActivity(@PathVariable Long activityId) {
+        recommendationService.deleteByActivityId(activityId);
+        return ResponseEntity.ok("Recommendation deleted successfully for activity: " + activityId);
+    }
+
 }

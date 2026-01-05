@@ -20,7 +20,9 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Button } from "@mui/material";
 
 import {
   getAiNutritionRecommendationsByUser,
@@ -91,6 +93,15 @@ const NutritionAiPlans = () => {
 
   return (
     <Box sx={{ p: 4 }}>
+      <Button
+  variant="contained"
+  startIcon={<ArrowBackIcon />}
+  onClick={() => navigate("/dashboard")}
+  sx={{ mb: 2 }}
+>
+  Back to Dashboard
+</Button>
+      
       <Typography variant="h4" fontWeight="bold">
         🧠 AI Nutrition Recommendations
       </Typography>

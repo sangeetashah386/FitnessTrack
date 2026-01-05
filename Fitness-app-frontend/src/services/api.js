@@ -22,14 +22,21 @@ api.interceptors.request.use((config) => {
 );
 
 // ---------- USERS ----------
-export const registerUser = (payload) => api.post("/users/register", payload);
+export const validateUser = (userId) =>
+  api.get(`/users/${userId}/validate`);
+export const registerUser = (payload) =>
+  api.post("/users/register", payload);
 export const getUserProfile = (userId) => api.get(`/users/${userId}`);
 
 // ---------- ACTIVITIES ----------
 export const getActivities = () => api.get("/activities");
 export const addActivity = (activity) => api.post("/activities", activity);
 export const getActivityDetail = (id) => api.get(`/activities/${id}`);
-export const getUserActivities = (userId) => api.get(`/activities/user/${userId}`)
+export const getUserActivities = (userId) => api.get(`/activities/user/${userId}`);
+export const deleteActivity = (activityId) =>
+  api.delete(`/activities/${activityId}`);
+
+
 
 // ---------- NUTRITION ----------
 export const createNutritionPlan = (plan) => api.post("/nutrition/create", plan);
@@ -62,6 +69,8 @@ export const getActivityRecommendations = (userId) =>
   api.get(`/recommendations/user/${userId}`);
 export const getActivityRecommendation = (activityId) =>
   api.get(`/recommendations/activity/${activityId}`);
+  export const deleteRecommendationByActivityId = (activityId) =>
+  api.delete(`/recommendations/activity/${activityId}`);
 
  
 

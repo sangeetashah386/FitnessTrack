@@ -12,4 +12,7 @@ public interface ActivityService {
      List<ActivityResponse> getUserActivities(String userId);
 
      ActivityResponse getActivityById(Long activityId);
+     void deleteActivity(Long activityId);
+
+
 }

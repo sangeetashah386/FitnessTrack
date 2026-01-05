@@ -5,13 +5,14 @@ import {
   Typography,
   Button,
   Box,
-  CircularProgress,
   Collapse,
   Divider,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getUserActivities, getActivityRecommendation } from "../services/api";
+import { getUserActivities, getActivityRecommendation, deleteActivity } from "../services/api";
 import { useSelector } from "react-redux";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { IconButton } from "@mui/material";
 
 const ActivityList = () => {
   const [activities, setActivities] = useState([]);
@@ -19,17 +20,44 @@ const ActivityList = () => {
   const [recommendations, setRecommendations] = useState({});
   const userId = useSelector((state) => state.auth.userId);
 
+  // 🚀 Fetch user activities
+  const fetchActivities = async () => {
+    try {
+      const response = await getUserActivities(userId);
+      setActivities(response.data);
+    } catch (error) {
+      console.error("Error fetching user activities:", error);
+    }
+  };
+
+  // Load activities on mount
   useEffect(() => {
-    const fetchUserActivities = async () => {
-      try {
-        const response = await getUserActivities(userId);
-        setActivities(response.data);
-      } catch (error) {
-        console.error("Error fetching user activities:", error);
-      }
-    };
-    if (userId) fetchUserActivities();
+    if (userId) fetchActivities();
   }, [userId]);
+
+  // 🗑️ Delete handler FIXED (no double alerts)
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this activity?")) return;
+
+    try {
+      await deleteActivity(id);
+      alert("Activity deleted successfully!");
+
+      // 🚀 Update UI safely WITHOUT triggering errors
+      setActivities((prev) => prev.filter((a) => a.id !== id));
+
+      // 🚀 Remove recommendation from UI as well
+      setRecommendations((prev) => {
+        const updated = { ...prev };
+        delete updated[id];
+        return updated;
+      });
+
+    } catch (err) {
+      console.error("Delete failed: ", err);
+      alert("Failed to delete activity.");
+    }
+  };
 
   const handleGetRecommendation = async (activityId) => {
     setLoading(true);
@@ -58,6 +86,7 @@ const ActivityList = () => {
                 </Typography>
                 <Typography>Duration: {activity.duration} min</Typography>
                 <Typography>Calories: {activity.caloriesBurned}</Typography>
+
                 <Button
                   variant="outlined"
                   size="small"
@@ -67,6 +96,14 @@ const ActivityList = () => {
                 >
                   {loading ? "Loading..." : "Show Recommendation"}
                 </Button>
+
+                <IconButton
+                  color="error"
+                  sx={{ mt: 1, ml: 1 }}
+                  onClick={() => handleDelete(activity.id)}
+                >
+                  <DeleteIcon />
+                </IconButton>
 
                 <Collapse in={!!recommendations[activity.id]}>
                   {recommendations[activity.id] && (
@@ -79,18 +116,27 @@ const ActivityList = () => {
                         {recommendations[activity.id].recommendation ||
                           "No analysis available."}
                       </Typography>
-                      <Typography sx={{ mt: 1 }}>
-                        <strong>Improvements:</strong>{" "}
-                        {recommendations[activity.id].improvements?.join(", ")}
-                      </Typography>
-                      <Typography sx={{ mt: 1 }}>
-                        <strong>Suggestions:</strong>{" "}
-                        {recommendations[activity.id].suggestions?.join(", ")}
-                      </Typography>
-                      <Typography sx={{ mt: 1 }}>
-                        <strong>Safety Tips:</strong>{" "}
-                        {recommendations[activity.id].safety?.join(", ")}
-                      </Typography>
+
+                      {recommendations[activity.id].improvements && (
+                        <Typography sx={{ mt: 1 }}>
+                          <strong>Improvements:</strong>{" "}
+                          {recommendations[activity.id].improvements.join(", ")}
+                        </Typography>
+                      )}
+
+                      {recommendations[activity.id].suggestions && (
+                        <Typography sx={{ mt: 1 }}>
+                          <strong>Suggestions:</strong>{" "}
+                          {recommendations[activity.id].suggestions.join(", ")}
+                        </Typography>
+                      )}
+
+                      {recommendations[activity.id].safety && (
+                        <Typography sx={{ mt: 1 }}>
+                          <strong>Safety Tips:</strong>{" "}
+                          {recommendations[activity.id].safety.join(", ")}
+                        </Typography>
+                      )}
                     </Box>
                   )}
                 </Collapse>

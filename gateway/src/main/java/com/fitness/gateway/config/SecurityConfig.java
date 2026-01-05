@@ -22,8 +22,9 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http){
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(exchange -> exchange
-                         .pathMatchers("/api/users/register").permitAll()
+                        .pathMatchers("/api/users/register").permitAll()
                         .pathMatchers("/api/users/*").permitAll()
                         .pathMatchers("/api/users/*/validate").permitAll()
                         .anyExchange().authenticated()
@@ -42,7 +43,7 @@ public class SecurityConfig {
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-User-ID"));
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }

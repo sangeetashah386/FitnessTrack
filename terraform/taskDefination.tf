@@ -104,15 +104,15 @@ resource "aws_ecs_task_definition" "user_service" {
       essential = true
       portMappings = [{ containerPort = 8081 }]
       environment = concat(local.common_environment, [
-        { name = "SPRING_DATASOURCE_URL",      value = var.mysql_url },
-        { name = "SPRING_DATASOURCE_USERNAME", value = var.mysql_username },
+        { name = "SPRING_DATASOURCE_URL",      value =  var.mysql_url},
+        { name = "SPRING_DATASOURCE_USERNAME", value = "root" },
         { name = "SPRING_RABBITMQ_HOST",       value = var.rabbitmq_host },
         { name = "KEYCLOAK_AUTH_SERVER_URL", value = local.keycloak_realm_url }
       ])
       secrets = [
         {
           name      = "SPRING_DATASOURCE_PASSWORD"
-          valueFrom = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter${var.mysql_password_ssm_param}"
+          valueFrom = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/fittrack/mysql/password"
         }
       ]
       logConfiguration = {
@@ -145,13 +145,13 @@ resource "aws_ecs_task_definition" "activity_service" {
       portMappings = [{ containerPort = 8082 }]
       environment = concat(local.common_environment, [
         { name = "SPRING_DATASOURCE_URL",      value = var.mysql_url },
-        { name = "SPRING_DATASOURCE_USERNAME", value = var.mysql_username },
+        { name = "SPRING_DATASOURCE_USERNAME", value = "root" },
         { name = "SPRING_RABBITMQ_HOST",       value = var.rabbitmq_host }
       ])
       secrets = [
         {
           name      = "SPRING_DATASOURCE_PASSWORD"
-          valueFrom = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter${var.mysql_password_ssm_param}"
+          valueFrom = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/fittrack/mysql/password"
         }
       ]
       logConfiguration = {
@@ -259,6 +259,18 @@ resource "aws_ecs_task_definition" "frontend" {
       image     = "${local.ecr}/${var.images.frontend}"
       essential = true
       portMappings = [{ containerPort = 80 }]
+      environment = [
+        {
+          name  = "API_BASE_URL"
+          value = "http://${aws_ssm_parameter.alb_dns.value}/api"
+        }
+      ]
+      command = [
+        "sh",
+        "-c",
+        "echo \"window.API_BASE_URL='$API_BASE_URL'\" > /usr/share/nginx/html/runtime-env.js && nginx -g 'daemon off;'"
+      ]
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {

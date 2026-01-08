@@ -22,9 +22,8 @@ services:
     networks:
       - fittrack-net
 
-  # =======================
+
   # MONGODB
-  # =======================
   mongodb:
     image: mongo:6
     platform: linux/amd64
@@ -52,9 +51,7 @@ services:
     networks:
       - fittrack-net
 
-  # =======================
   # RABBITMQ
-  # =======================
   rabbitmq:
     image: rabbitmq:3.13-management
     platform: linux/amd64
@@ -65,9 +62,7 @@ services:
     networks:
       - fittrack-net
 
-  # =======================
   # KEYCLOAK
-  # =======================
   keycloak:
     image: quay.io/keycloak/keycloak:21.1.1
     platform: linux/amd64
@@ -96,9 +91,8 @@ services:
     depends_on:
       - keycloak-postgres
 
-  # =======================
+
   # CONFIG SERVER
-  # =======================
   config-server:
     build: ./configserver
     platform: linux/amd64
@@ -117,9 +111,8 @@ services:
       timeout: 5s
       retries: 10
 
-  # =======================
+
   # EUREKA SERVER
-  # =======================
   eureka-server:
     build: ./eureka
     platform: linux/amd64
@@ -141,9 +134,8 @@ services:
       timeout: 5s
       retries: 20
 
-  # =======================
+
   # USER SERVICE
-  # =======================
   user-service:
     build: ./userService
     platform: linux/amd64
@@ -176,9 +168,7 @@ services:
         condition: service_healthy
 
 
-  # =======================
   # ACTIVITY SERVICE
-  # =======================
   activity-service:
     build: ./activityService
     platform: linux/amd64
@@ -218,9 +208,8 @@ services:
       eureka-server:
         condition: service_healthy
 
-  # =======================
+
   # NUTRITION SERVICE
-  # =======================
   nutrition-service:
     build: ./nutritionService
     platform: linux/amd64
@@ -256,9 +245,8 @@ services:
       eureka-server:
         condition: service_healthy
 
-  # =======================
+
   # RECOMMENDATION SERVICE
-  # =======================
   recommendation-service:
     build: ./recommendationService
     image: recommendation-service
@@ -299,9 +287,8 @@ services:
       eureka-server:
         condition: service_healthy
 
-  # =======================
+
   # API GATEWAY
-  # =======================
   api-gateway:
     build: ./gateway
     image: api-gateway
@@ -337,17 +324,14 @@ services:
       - api-gateway
 
 
-# =======================
+
 # VOLUMES
-# =======================
 volumes:
   mysql_data:
   mongo_data:
   keycloak_pgdata:
 
-# =======================
 # NETWORK
-# =======================
 networks:
   fittrack-net:
     external: true

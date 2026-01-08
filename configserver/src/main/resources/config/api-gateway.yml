@@ -6,9 +6,12 @@ spring:
       resourceserver:
         jwt:
           #issuer-uri: http://keycloak:8080/realms/fitness-oauth2
-          jwk-set-uri: http://keycloak:8080/realms/fitness-oauth2/protocol/openid-connect/certs
+          #jwk-set-uri: http://keycloak:8080/realms/fitness-oauth2/protocol/openid-connect/certs
+          jwk-set-uri: http://keycloak.fittrack.local:8080/realms/fitness-oauth2/protocol/openid-connect/certs
 
   cloud:
+    config:
+      uri: http://config-server.fittrack.local:8071
     gateway:
       discovery:
         locator:
@@ -43,7 +46,8 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://eureka-server:8761/eureka/
+      #defaultZone: http://eureka-server:8761/eureka/
+      defaultZone: http://eureka-server.fittrack.local:8761/eureka/
   instance:
 #    hostname: eureka-server
     prefer-ip-address: true

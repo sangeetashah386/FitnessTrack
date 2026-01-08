@@ -9,7 +9,8 @@ spring:
       database: fitness-nutrition-db
 
   rabbitmq:
-    host: rabbitmq
+    #host: rabbitmq
+    host: rabbitmq.fittrack.local
     port: 5672
     username: guest
     password: guest
@@ -25,7 +26,8 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://eureka-server:8761/eureka/
+      #defaultZone: http://eureka-server:8761/eureka/
+      defaultZone: http://eureka-server.fittrack.local:8761/eureka/
   instance:
 #    hostname: eureka-server
     prefer-ip-address: false

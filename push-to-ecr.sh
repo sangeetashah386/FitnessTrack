@@ -43,6 +43,24 @@ for NAME in "${!EXTERNAL_IMAGES[@]}"; do
   docker tag $SRC $ECR/$NAME:latest
   docker push $ECR/$NAME:latest
 done
+echo "Pushing external images (AMD64 only)..." 
+for NAME in "${!EXTERNAL_IMAGES[@]}"; do 
+SRC="${EXTERNAL_IMAGES[$NAME]}"
 
+# Force AMD64 pull
+docker pull --platform linux/amd64 $SRC
+
+# Validate architecture 
+ARCH=$(docker inspect $SRC | jq -r '.[].Architecture')
+if [[ "$ARCH" != "amd64" ]]; then 
+echo " ERROR: $SRC is not AMD64 (detected: $ARCH). Skipping push." 
+	continue 
+fi
+echo " Architecture verified: $ARCH"
+
+# Tag + push to ECR 
+docker tag $SRC $ECR/$NAME:latest 
+docker push $ECR/$NAME:latest 
+echo "✅ Successfully pushed $NAME (AMD64)" 
+done
 echo "All images pushed successfully!"
-

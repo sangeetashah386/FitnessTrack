@@ -4,6 +4,8 @@ spring:
     name: recommendation-service
   config:
     #import: optional:configserver:http://localhost:8071
-    import: optional:configserver:http://config-server:8071
+    import: optional:configserver:http://config-server.fittrack.local:8071
+
+    #import: optional:configserver:http://config-server:8071
 
 

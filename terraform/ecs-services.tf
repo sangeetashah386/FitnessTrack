@@ -11,6 +11,9 @@ resource "aws_ecs_service" "config_server" {
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
+  service_registries {
+    registry_arn = aws_service_discovery_service.config_server.arn
+  }
 }
 
 #EUREKA SERVER
@@ -26,7 +29,9 @@ resource "aws_ecs_service" "eureka_server" {
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
-
+  service_registries {
+    registry_arn = aws_service_discovery_service.eureka_server.arn
+  }
   depends_on = [
     aws_ecs_service.config_server
   ]
@@ -52,6 +57,10 @@ resource "aws_ecs_service" "api_gateway" {
     assign_public_ip = true
   }
 
+  service_registries {
+    registry_arn = aws_service_discovery_service.api_gateway.arn
+  }
+
   depends_on = [
     aws_lb_listener.http,
     aws_ecs_service.eureka_server,
@@ -71,6 +80,9 @@ resource "aws_ecs_service" "user_service" {
     subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
+  }
+  service_registries {
+    registry_arn = aws_service_discovery_service.user_service.arn
   }
 
   depends_on = [
@@ -92,6 +104,9 @@ resource "aws_ecs_service" "activity_service" {
     subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
+  }
+  service_registries {
+    registry_arn = aws_service_discovery_service.activity_service.arn
   }
 
   depends_on = [
@@ -115,6 +130,10 @@ resource "aws_ecs_service" "nutrition_service" {
     assign_public_ip = false
   }
 
+  service_registries {
+    registry_arn = aws_service_discovery_service.nutrition_service.arn
+  }
+
   depends_on = [
     aws_ecs_service.eureka_server,
     aws_ecs_service.mongodb,
@@ -134,6 +153,10 @@ resource "aws_ecs_service" "recommendation_service" {
     subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.recommendation_service.arn
   }
 
   depends_on = [
@@ -156,6 +179,9 @@ resource "aws_ecs_service" "frontend" {
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = true
   }
+  service_registries {
+    registry_arn = aws_service_discovery_service.frontend.arn
+  }
 }
 
 #MYSQL
@@ -170,6 +196,9 @@ resource "aws_ecs_service" "mysql" {
     subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
+  }
+  service_registries {
+    registry_arn = aws_service_discovery_service.mysql.arn
   }
 }
 
@@ -186,6 +215,9 @@ resource "aws_ecs_service" "mongodb" {
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
+  service_registries {
+    registry_arn = aws_service_discovery_service.mongodb.arn
+  }
 }
 
 #RABBITMQ
@@ -200,6 +232,9 @@ resource "aws_ecs_service" "rabbitmq" {
     subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
+  }
+  service_registries {
+    registry_arn = aws_service_discovery_service.rabbitmq.arn
   }
 }
 
@@ -216,6 +251,9 @@ resource "aws_ecs_service" "keycloak_postgres" {
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
+  service_registries {
+    registry_arn = aws_service_discovery_service.keycloak_postgres.arn
+  }
 }
 
 #KEYCLOAK
@@ -230,6 +268,9 @@ resource "aws_ecs_service" "keycloak" {
     subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
+  }
+  service_registries {
+    registry_arn = aws_service_discovery_service.keycloak.arn
   }
 
   depends_on = [

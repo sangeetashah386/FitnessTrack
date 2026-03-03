@@ -7,7 +7,7 @@ resource "aws_ecs_service" "config_server" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -25,7 +25,7 @@ resource "aws_ecs_service" "eureka_server" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -45,6 +45,8 @@ resource "aws_ecs_service" "api_gateway" {
   desired_count   = 1
   launch_type     = "FARGATE"
 
+  enable_execute_command = true
+
   load_balancer {
     target_group_arn = aws_lb_target_group.api_gateway_tg.arn
     container_name   = "api-gateway"
@@ -52,7 +54,7 @@ resource "aws_ecs_service" "api_gateway" {
   }
 
   network_configuration {
-    subnets          = aws_subnet.public[*].id
+    subnets          = local.public_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = true
   }
@@ -77,7 +79,7 @@ resource "aws_ecs_service" "user_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -87,7 +89,7 @@ resource "aws_ecs_service" "user_service" {
 
   depends_on = [
     aws_ecs_service.eureka_server,
-    aws_ecs_service.mysql,
+    //aws_ecs_service.mysql,
     aws_ecs_service.rabbitmq
   ]
 }
@@ -99,9 +101,10 @@ resource "aws_ecs_service" "activity_service" {
   task_definition = aws_ecs_task_definition.activity_service.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  enable_execute_command = true
 
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -111,7 +114,7 @@ resource "aws_ecs_service" "activity_service" {
 
   depends_on = [
     aws_ecs_service.eureka_server,
-    aws_ecs_service.mysql,
+    //aws_ecs_service.mysql,
     aws_ecs_service.rabbitmq
   ]
 }
@@ -125,7 +128,7 @@ resource "aws_ecs_service" "nutrition_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -150,7 +153,7 @@ resource "aws_ecs_service" "recommendation_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -174,33 +177,48 @@ resource "aws_ecs_service" "frontend" {
   desired_count   = 1
   launch_type     = "FARGATE"
 
+  # Attach the frontend container to the ALB target group
+  load_balancer {
+    target_group_arn = aws_lb_target_group.frontend_tg.arn
+    container_name   = "frontend"
+    container_port   = 80
+  }
+
+  # Networking for Fargate tasks
   network_configuration {
-    subnets          = aws_subnet.public[*].id
+    subnets          = local.public_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = true
   }
+
+  # Service discovery (optional but you already use it)
   service_registries {
     registry_arn = aws_service_discovery_service.frontend.arn
   }
+
+  # Ensure tasks are replaced safely
+  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 200
 }
+
 
 #MYSQL
-resource "aws_ecs_service" "mysql" {
-  name            = "mysql"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.mysql.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
-
-  network_configuration {
-    subnets          = aws_subnet.private[*].id
-    security_groups  = [aws_security_group.ecs_tasks_sg.id]
-    assign_public_ip = false
-  }
-  service_registries {
-    registry_arn = aws_service_discovery_service.mysql.arn
-  }
-}
+//resource "aws_ecs_service" "mysql" {
+//  name            = "mysql"
+//  cluster         = aws_ecs_cluster.main.id
+//  task_definition = aws_ecs_task_definition.mysql.arn
+//  desired_count   = 1
+//  launch_type     = "FARGATE"
+//
+//  network_configuration {
+//    subnets          = aws_subnet.private[*].id
+//    security_groups  = [aws_security_group.ecs_tasks_sg.id]
+//    assign_public_ip = false
+//  }
+//  service_registries {
+//    registry_arn = aws_service_discovery_service.mysql.arn
+//  }
+//}
 
 #MONGODB
 resource "aws_ecs_service" "mongodb" {
@@ -210,8 +228,10 @@ resource "aws_ecs_service" "mongodb" {
   desired_count   = 1
   launch_type     = "FARGATE"
 
+  enable_execute_command = true
+
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -229,7 +249,7 @@ resource "aws_ecs_service" "rabbitmq" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -239,22 +259,22 @@ resource "aws_ecs_service" "rabbitmq" {
 }
 
 #KEYCLOAK-POSTGRES
-resource "aws_ecs_service" "keycloak_postgres" {
-  name            = "keycloak-postgres"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.keycloak_postgres.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
-
-  network_configuration {
-    subnets          = aws_subnet.private[*].id
-    security_groups  = [aws_security_group.ecs_tasks_sg.id]
-    assign_public_ip = false
-  }
-  service_registries {
-    registry_arn = aws_service_discovery_service.keycloak_postgres.arn
-  }
-}
+//resource "aws_ecs_service" "keycloak_postgres" {
+//  name            = "keycloak-postgres"
+//  cluster         = aws_ecs_cluster.main.id
+//  task_definition = aws_ecs_task_definition.keycloak_postgres.arn
+//  desired_count   = 1
+//  launch_type     = "FARGATE"
+//
+//  network_configuration {
+//    subnets          = aws_subnet.private[*].id
+//    security_groups  = [aws_security_group.ecs_tasks_sg.id]
+//    assign_public_ip = false
+//  }
+//  service_registries {
+//    registry_arn = aws_service_discovery_service.keycloak_postgres.arn
+//  }
+//}
 
 #KEYCLOAK
 resource "aws_ecs_service" "keycloak" {
@@ -264,8 +284,18 @@ resource "aws_ecs_service" "keycloak" {
   desired_count   = 1
   launch_type     = "FARGATE"
 
+  enable_execute_command = true
+  force_new_deployment = true
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.keycloak_tg.arn
+    container_name   = "keycloak"
+    container_port   = 8080
+  }
+
+
   network_configuration {
-    subnets          = aws_subnet.private[*].id
+    subnets          = local.private_subnets
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     assign_public_ip = false
   }
@@ -273,7 +303,7 @@ resource "aws_ecs_service" "keycloak" {
     registry_arn = aws_service_discovery_service.keycloak.arn
   }
 
-  depends_on = [
-    aws_ecs_service.keycloak_postgres
-  ]
+//  depends_on = [
+//    aws_ecs_service.keycloak_postgres
+//  ]
 }

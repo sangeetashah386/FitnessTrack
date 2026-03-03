@@ -8,6 +8,7 @@ import com.fitness.activityService.events.ActivityEventPublisher;
 import com.fitness.activityService.exception.InvalidUserException;
 import com.fitness.activityService.mapper.ActivityMapper;
 import com.fitness.activityService.model.Activity;
+import com.fitness.activityService.model.ActivityType;
 import com.fitness.activityService.repo.ActivityRepository;
 import com.fitness.activityService.service.ActivityService;
 import lombok.AllArgsConstructor;
@@ -37,7 +38,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
 
-    @Value("${rabbitmq.delete.routing.key}")
+    @Value("${rabbitmq.delete.routingKey}")
     private String deleteRoutingKey;
 
 
@@ -58,6 +59,37 @@ public class ActivityServiceImpl implements ActivityService {
         }
 
         Activity activity = activityMapper.toEntity(request);
+
+        if (activity.getStartTime() != null && activity.getEndTime() != null) {
+        // Calculate Duration
+            long minutes = java.time.Duration.between(
+                    activity.getStartTime(),
+                    activity.getEndTime()
+            ).toMinutes();
+
+            if (minutes <= 0) {
+                throw new RuntimeException("End time must be after start time");
+            }
+
+            activity.setDuration((int) minutes);
+        }
+
+        //Validate Distance if Required
+        if (isDistanceBased(activity.getType())) {
+
+            if (activity.getDistance() == null || activity.getDistance() <= 0) {
+                throw new RuntimeException(
+                        activity.getType() + " requires distance"
+                );
+            }
+            // 3️⃣ Calculate Pace
+            if (activity.getDuration() != null && activity.getDuration() > 0) {
+
+                double pace = activity.getDuration() / activity.getDistance();
+                activity.setPace(Math.round(pace * 100.0) / 100.0);
+            }
+        }
+
         Activity savedActivity =repository.save(activity);
 
         //Publish to RabbitMQ for AI Processing
@@ -107,6 +139,16 @@ public class ActivityServiceImpl implements ActivityService {
         } catch (Exception e) {
             log.error("Failed to publish delete event", e);
         }
+    }
+
+    // ================= HELPER METHOD =================
+    private boolean isDistanceBased(ActivityType type) {
+        return type == ActivityType.RUNNING ||
+                type == ActivityType.WALKING ||
+                type == ActivityType.HIKING ||
+                type == ActivityType.CYCLING ||
+                type == ActivityType.SWIMMING ||
+                type == ActivityType.SKIING;
     }
 
 

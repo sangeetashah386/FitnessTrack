@@ -1,7 +1,8 @@
 import axios from "axios";
+import { store } from '../store/store'
 
 //const API_URL = 'http://localhost:8080/api';
-const API_URL = window.API_BASE_URL || 'http://localhost:8080/api';
+const API_URL = 'https://api.fitnesstrackapp.click/api';
 
 
 const api = axios.create({
@@ -9,8 +10,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const userId = localStorage.getItem('userId');
+   // const userId = localStorage.getItem('userId');
     const token = localStorage.getItem('token');
+    const state = store.getState();
+    const userId = state.auth.userId;
 
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;

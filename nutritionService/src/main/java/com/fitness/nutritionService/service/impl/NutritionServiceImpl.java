@@ -1,11 +1,9 @@
 package com.fitness.nutritionService.service.impl;
 
-import com.fitness.nutritionService.dto.ActivityResponse;
 import com.fitness.nutritionService.dto.PlanRequest;
 import com.fitness.nutritionService.dto.PlanResponse;
 import com.fitness.nutritionService.dto.UserResponse;
 import com.fitness.nutritionService.exception.ResourceNotFoundException;
-import com.fitness.nutritionService.helper.UserProfileHelper;
 import com.fitness.nutritionService.mapper.NutritionMapper;
 import com.fitness.nutritionService.model.Nutrition;
 import com.fitness.nutritionService.repo.NutritionPlanRepository;
@@ -16,13 +14,11 @@ import com.fitness.nutritionService.service.client.UserClient;
 import com.fitness.nutritionService.exception.UserServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +29,6 @@ public class NutritionServiceImpl implements NutritionService {
     private final NutritionMapper mapper;
     private final UserClient userClient;
     private final ActivityClient activityClient;
-    private final UserProfileHelper profileHelper;
     private final NutritionRecommendationService recommendationService; // <— New direct service call
 
     @Override
@@ -41,7 +36,7 @@ public class NutritionServiceImpl implements NutritionService {
     public PlanResponse create(PlanRequest req) {
         log.info("Creating nutrition plan for userId: {}", req.getUserId());
 
-        // ✅ Validate user
+        // Validate user
         UserResponse user;
         try {
             user = userClient.getUserById(req.getUserId());
@@ -50,24 +45,22 @@ public class NutritionServiceImpl implements NutritionService {
             throw new ResourceNotFoundException(ex.getMessage());
         }
 
-        // ✅ Calculate calories if not provided
+        // Calculate calories if not provided
         if (req.getDailyCalories() == null) {
-            double calculatedCalories = profileHelper.calculateDefaultCalories(req.getGoal());
-            req.setDailyCalories(calculatedCalories);
-            log.info("Calculated default calories for goal '{}': {} kcal", req.getGoal(), calculatedCalories);
+            throw new IllegalArgumentException("dailyCalories must be provided for a nutrition plan");
         }
 
-        // ✅ Map and save nutrition plan
+        //  Map and save nutrition plan
         Nutrition plan = mapper.toEntity(req);
         Nutrition savedPlan = repo.save(plan);
-        log.info("✅ Nutrition plan saved successfully: {}", savedPlan.getId());
+        log.info(" Nutrition plan saved successfully: {}", savedPlan.getId());
 
-        // ✅ Immediately trigger AI recommendation (no RabbitMQ)
+        //  Immediately trigger AI recommendation (no RabbitMQ)
         try {
             recommendationService.generateNow(savedPlan);
-            log.info("🤖 AI recommendation generated for nutritionId: {}", savedPlan.getId());
+            log.info(" AI recommendation generated for nutritionId: {}", savedPlan.getId());
         } catch (Exception e) {
-            log.error("❌ Failed to generate AI recommendation for nutritionId: {} — {}",
+            log.error(" Failed to generate AI recommendation for nutritionId: {} — {}",
                     savedPlan.getId(), e.getMessage());
         }
 
@@ -136,29 +129,15 @@ public class NutritionServiceImpl implements NutritionService {
         if (!repo.existsById(id)) {
             throw new ResourceNotFoundException("Nutrition plan not found with id: " + id);
         }
+        try {
+            recommendationService.deleteByNutritionId(id);
+            log.info("🗑️ Deleted all recommendations for nutritionId: {}", id);
+        } catch (Exception e) {
+            log.warn("⚠️ Failed to delete recommendations for nutritionId {}: {}", id, e.getMessage());
+        }
         repo.deleteById(id);
         log.info("🗑️ Successfully deleted nutrition plan with id: {}", id);
     }
 
-    // Optional utility method if you still want activity calories in future
-    private double calculateWeeklyCaloriesBurned(String userId) {
-        try {
-            List<ActivityResponse> activities = activityClient.getActivitiesByUserId(userId);
-            LocalDateTime weekAgo = LocalDateTime.now().minusDays(7);
-            double totalBurned = activities.stream()
-                    .filter(a -> {
-                        LocalDateTime activityDate = a.getStartTime() != null ?
-                                a.getStartTime() : a.getCreatedAt();
-                        return activityDate != null && activityDate.isAfter(weekAgo);
-                    })
-                    .mapToDouble(a -> a.getCaloriesBurned() != null ? a.getCaloriesBurned() : 0.0)
-                    .sum();
 
-            log.info("Weekly calories burned for userId {}: {} kcal", userId, totalBurned);
-            return totalBurned;
-        } catch (Exception e) {
-            log.warn("Could not fetch activities for userId {}: {}", userId, e.getMessage());
-            return 0.0;
-        }
-    }
 }

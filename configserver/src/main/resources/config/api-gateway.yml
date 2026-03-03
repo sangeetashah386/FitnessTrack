@@ -7,7 +7,9 @@ spring:
         jwt:
           #issuer-uri: http://keycloak:8080/realms/fitness-oauth2
           #jwk-set-uri: http://keycloak:8080/realms/fitness-oauth2/protocol/openid-connect/certs
-          jwk-set-uri: http://keycloak.fittrack.local:8080/realms/fitness-oauth2/protocol/openid-connect/certs
+          #jwk-set-uri: http://keycloak.fittrack.local:8080/realms/fitness-oauth2/protocol/openid-connect/certs
+          issuer-uri: https://auth.fitnesstrackapp.click/realms/fitness-oauth2
+#          issuer-uri: https://keycloak.fittrack.local:8080/realms/fitness-oauth2
 
   cloud:
     config:
@@ -43,6 +45,25 @@ spring:
 server:
   port: 8080
 
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info
+#  endpoint:
+#    health:
+#      show-details: never
+#      probes:
+#        enabled: true
+management:
+  health:
+    defaults:
+      enabled: true
+    reactive:
+      enabled: false
+    keycloak:
+      enabled: false
+
 eureka:
   client:
     serviceUrl:
@@ -51,5 +72,5 @@ eureka:
   instance:
 #    hostname: eureka-server
     prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}t}
+    instance-id: ${spring.application.name}:${server.port}
 

@@ -19,11 +19,6 @@ public class NutritionMapper {
         plan.setDailyMeals(request.getDailyMeals());
         plan.setRecommendations(request.getRecommendations());
         plan.setExtraData(request.getExtraData());
-        plan.setAge(request.getAge());
-        plan.setWeight(request.getWeight());
-        plan.setHeight(request.getHeight());
-        plan.setGender(request.getGender());
-        plan.setActivityLevel(request.getActivityLevel());
         // createdAt/updatedAt are handled by Mongo auditing
         return plan;
     }
@@ -42,11 +37,7 @@ public class NutritionMapper {
         response.setExtraData(plan.getExtraData());
         response.setCreatedAt(plan.getCreatedAt());
         response.setUpdatedAt(plan.getUpdatedAt());
-        response.setAge(plan.getAge());
-        response.setWeight(plan.getWeight());
-        response.setHeight(plan.getHeight());
-        response.setGender(plan.getGender());
-        response.setActivityLevel(plan.getActivityLevel());
+
         return response;
     }
 

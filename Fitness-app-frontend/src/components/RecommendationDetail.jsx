@@ -23,7 +23,7 @@ const RecommendationDetail = () => {
         const res = await getActivityRecommendation(activityId);
         setRecommendation(res.data);
       } catch (error) {
-        console.error("❌ Error fetching recommendation:", error);
+        console.error(" Error fetching recommendation:", error);
       } finally {
         setLoading(false);
       }
@@ -40,7 +40,7 @@ const RecommendationDetail = () => {
       alert(res.data); // Message from backend
       navigate("/recommendations"); // Go back to list page
     } catch (err) {
-      console.error("❌ Failed to delete:", err);
+      console.error(" Failed to delete:", err);
       alert("Failed to delete recommendation.");
     }
   };

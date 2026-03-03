@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -21,11 +22,15 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http){
         return http
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/**"))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                //.cors(ServerHttpSecurity.CorsSpec::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
+                        .pathMatchers("/health/").permitAll()
                         .pathMatchers("/api/users/register").permitAll()
-                        .pathMatchers("/api/users/*").permitAll()
+                        .pathMatchers("/api/users/**").permitAll()
                         .pathMatchers("/api/users/*/validate").permitAll()
                         .anyExchange().authenticated()
                 )
@@ -38,7 +43,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "https://fitnesstrackapp.click"
+        ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-User-ID"));
         config.setAllowCredentials(true);

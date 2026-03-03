@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { setCredentials, logout } from "./store/authSlice";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { useSelector } from "react-redux";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -18,6 +19,8 @@ import RecommendationDetail from "./components/RecommendationDetail";
 
 // Protected routes
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AuthInitializer from "./components/AuthInitializer";
+import RegisterPage from "./pages/RegisterPage";
 
 // GLOBAL REGISTRATION HANDLER
 import PostRegisterHandler from "./components/PostRegisterHandler";
@@ -26,33 +29,33 @@ function App() {
   const auth = useContext(AuthContext);
   const dispatch = useDispatch();
 
-  const { token, logOut, loginInProgress, idTokenData } = auth || {};
-  const isAuthed = Boolean(token);
+  const { logOut, loginInProgress, token: oauthToken } = auth || {};
+  const { token } = useSelector((state) => state.auth); // Redux token
+  const handleLogout = async () => {
+      try {
+        dispatch(logout());
 
-  
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    }
-  }, [token]);
+        // Clear all stored tokens
+        localStorage.clear();
+        sessionStorage.clear();
 
-  
-  useEffect(() => {
-    if (idTokenData?.sub) {
-      localStorage.setItem("userId", idTokenData.sub);
-      dispatch(setCredentials({ user: idTokenData, token: token }));
-    }
-  }, [idTokenData, token, dispatch]);
+        if (logOut) {
+          await logOut(); // Proper OAuth logout
+        }
 
-  /* -----------------------------------------------------
-     🚪 LOGOUT HANDLER (CLEAN)
-  ----------------------------------------------------- */
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    dispatch(logout());
-    if (logOut) logOut();
-  };
+        navigate("/", { replace: true });
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    };
+
+//   const handleLogout = () => {
+//     localStorage.removeItem("token");
+//     dispatch(logout());
+//     if (logOut) logOut();
+//
+//   };
+
 
   if (loginInProgress) {
     return <div>🔑 Logging you in… please wait</div>;
@@ -60,12 +63,11 @@ function App() {
 
   return (
     <BrowserRouter>
+      {/* Initialize Redux from localStorage on refresh */}
+      <AuthInitializer />
 
-      {/*  Runs user sync only when token exists */}
-      {token && <PostRegisterHandler />}
-
-      {/* 🔝 TOP NAVBAR */}
-      {isAuthed && (
+      {/* Top Navbar */}
+      {token && (
         <AppBar position="static" color="primary">
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -79,11 +81,14 @@ function App() {
       )}
 
       <Routes>
-        {/* LANDING / ROOT */}
+        {/* ROOT ROUTE */}
         <Route
           path="/"
           element={
-            isAuthed ? (
+            oauthToken && !token ? (
+              // Run once after OAuth login
+              <PostRegisterHandler />
+            ) : token ? (
               <Navigate to="/dashboard" replace />
             ) : (
               <LandingPage />
@@ -91,11 +96,13 @@ function App() {
           }
         />
 
+        <Route path="/register" element={<RegisterPage />} />
+
         {/* PROTECTED ROUTES */}
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute isAuthed={isAuthed}>
+            <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
           }
@@ -104,7 +111,7 @@ function App() {
         <Route
           path="/profile"
           element={
-            <ProtectedRoute isAuthed={isAuthed}>
+            <ProtectedRoute>
               <UserProfile />
             </ProtectedRoute>
           }
@@ -113,7 +120,7 @@ function App() {
         <Route
           path="/activities"
           element={
-            <ProtectedRoute isAuthed={isAuthed}>
+            <ProtectedRoute>
               <ActivitiesPage />
             </ProtectedRoute>
           }
@@ -122,7 +129,7 @@ function App() {
         <Route
           path="/recommendations"
           element={
-            <ProtectedRoute isAuthed={isAuthed}>
+            <ProtectedRoute>
               <RecommendationService />
             </ProtectedRoute>
           }
@@ -131,7 +138,7 @@ function App() {
         <Route
           path="/recommendations/:activityId"
           element={
-            <ProtectedRoute isAuthed={isAuthed}>
+            <ProtectedRoute>
               <RecommendationDetail />
             </ProtectedRoute>
           }
@@ -140,7 +147,7 @@ function App() {
         <Route
           path="/nutrition"
           element={
-            <ProtectedRoute isAuthed={isAuthed}>
+            <ProtectedRoute>
               <NutritionService />
             </ProtectedRoute>
           }
@@ -149,7 +156,7 @@ function App() {
         <Route
           path="/nutrition/ai"
           element={
-            <ProtectedRoute isAuthed={isAuthed}>
+            <ProtectedRoute>
               <NutritionAiPlans />
             </ProtectedRoute>
           }
@@ -158,7 +165,7 @@ function App() {
         <Route
           path="/nutrition/ai/:id"
           element={
-            <ProtectedRoute isAuthed={isAuthed}>
+            <ProtectedRoute>
               <NutritionAiPlanDetail />
             </ProtectedRoute>
           }
@@ -169,3 +176,6 @@ function App() {
 }
 
 export default App;
+
+
+

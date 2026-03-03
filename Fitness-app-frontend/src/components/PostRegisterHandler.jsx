@@ -1,96 +1,78 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { setCredentials } from "../store/authSlice";
+import { setCredentials, setInitialized } from "../store/authSlice";
 import { validateUser, registerUser } from "../services/api";
+import {jwtDecode} from "jwt-decode";
+
+
+
 
 const PostRegisterHandler = () => {
-  const { token, user, loginInProgress } = useContext(AuthContext);
+  //const { token, user, loginInProgress } = useContext(AuthContext);
+  const { token: oauthToken, loginInProgress } = useContext(AuthContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [hasRun, setHasRun] = useState(false);
 
   useEffect(() => {
-    console.log("🔄 PostRegisterHandler triggered");
-    console.log("loginInProgress:", loginInProgress);
-    console.log("token:", token);
-    console.log("user:", user);
+      if (loginInProgress || !oauthToken || hasRun) return;
 
-    // 1️⃣ Wait for Keycloak login to finish
-    if (loginInProgress) {
-      console.log("⏳ Login still in progress…");
-      return;
-    }
+      //if (loginInProgress || !token) return;
 
-    // 2️⃣ Token must exist
-    if (!token) {
-      console.log(" No token received — Keycloak token exchange failed.");
-      return;
-    }
+      const decoded = jwtDecode(oauthToken);
 
-    // 3️⃣ UserInfo must exist
-    if (!user || !user.sub) {
-      console.log(" No user info — Keycloak userinfo request failed.");
-      return;
-    }
+      const keycloakId = decoded.sub;
+      const email = decoded.email;
+      const firstName = decoded.given_name || "";
+      const lastName = decoded.family_name || "";
+      const phone = decoded.phone_number || "";
 
-    const syncUser = async () => {
-      try {
-        const keycloakId = user.sub;
-        const email = user.email;
+      const syncUser = async () => {
+        try {
+          const existsResponse = await validateUser(keycloakId);
+          const exists = existsResponse.data;
 
-        console.log("🔥 Keycloak User:", user);
+          if (!exists) {
+            await registerUser({
+              keycloakId,
+              email,
+              firstName,
+              lastName,
+              phone,
+            });
+          }
 
-        if (!keycloakId || !email) {
-          console.error("❌ Missing Keycloak ID or email.");
-          return;
+          dispatch(
+            setCredentials({
+              //token,
+              token: oauthToken,
+              //userId: keycloakId,
+              //email,
+              user: decoded,
+
+            })
+          );
+
+          localStorage.setItem("token", oauthToken);
+
+          dispatch(setInitialized());
+          setHasRun(true);
+         // localStorage.setItem("userId", keycloakId);
+          //localStorage.setItem("email", email);
+
+          navigate("/dashboard", { replace: true });
+        } catch (err) {
+          console.error("PostRegisterHandler failed:", err);
         }
+      };
 
-        // 4️⃣ Validate user
-        console.log(` Checking if user ${keycloakId} exists…`);
-        const existsResponse = await validateUser(keycloakId);
-        const exists = existsResponse.data;
+      syncUser();
+    }, [oauthToken, loginInProgress, dispatch, navigate, hasRun]);
 
-        // 5️⃣ Register if needed
-        if (!exists) {
-          console.log("🟢 Registering new user…");
-          await registerUser({
-            keycloakId,
-            email,
-            firstName: user.given_name || "",
-            lastName: user.family_name || "",
-            phone: user.phone_number || "",
-          });
-          console.log("✅ Registration complete");
-        } else {
-          console.log("ℹ️ User already exists");
-        }
+    return null;
+  };
 
-        // 6️⃣ Save credentials
-        dispatch(
-          setCredentials({
-            token,
-            userId: keycloakId,
-            email,
-          })
-        );
+  export default PostRegisterHandler;
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("userId", keycloakId);
-
-        // 7️⃣ Redirect
-        console.log("🚀 Redirecting to dashboard");
-        navigate("/dashboard", { replace: true });
-
-      } catch (err) {
-        console.error("❌ PostRegisterHandler failed:", err);
-      }
-    };
-
-    syncUser();
-  }, [token, user, loginInProgress, dispatch, navigate]);
-
-  return null;
-};
-
-export default PostRegisterHandler;

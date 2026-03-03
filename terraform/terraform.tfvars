@@ -1,5 +1,5 @@
 mysql_username = "fituser"
-mysql_url = "jdbc:mysql://mysql.fittrack.local:3306/fittrack"
+//mysql_url = "jdbc:mysql://${aws_db_instance.mysql.address}:3306/userdb"
 
 rabbitmq_host = "rabbitmq.fittrack.local"
 

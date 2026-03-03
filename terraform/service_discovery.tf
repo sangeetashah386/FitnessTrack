@@ -118,20 +118,6 @@ resource "aws_service_discovery_service" "frontend" {
   health_check_custom_config { failure_threshold = 1 }
 }
 
-# MYSQL
-resource "aws_service_discovery_service" "mysql" {
-  name = "mysql"
-
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.fittrack.id
-    dns_records {
-      type = "A"
-      ttl = 10
-    }
-  }
-
-  health_check_custom_config { failure_threshold = 1 }
-}
 
 # MONGODB
 resource "aws_service_discovery_service" "mongodb" {
@@ -163,20 +149,6 @@ resource "aws_service_discovery_service" "rabbitmq" {
   health_check_custom_config { failure_threshold = 1 }
 }
 
-# KEYCLOAK-POSTGRES
-resource "aws_service_discovery_service" "keycloak_postgres" {
-  name = "keycloak-postgres"
-
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.fittrack.id
-    dns_records {
-      type = "A"
-      ttl = 10
-    }
-  }
-
-  health_check_custom_config { failure_threshold = 1 }
-}
 
 # KEYCLOAK
 resource "aws_service_discovery_service" "keycloak" {

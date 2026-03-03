@@ -23,9 +23,6 @@ data "aws_ecr_repository" "frontend" {
   name = "frontend"
 }
 
-data "aws_ecr_repository" "mysql" {
-  name = "mysql"
-}
 
 data "aws_ecr_repository" "mongodb" {
   name = "mongodb"
@@ -35,9 +32,7 @@ data "aws_ecr_repository" "rabbitmq" {
   name = "rabbitmq"
 }
 
-data "aws_ecr_repository" "keycloak_postgres" {
-  name = "keycloak-postgres"
-}
+
 
 data "aws_ecr_repository" "keycloak" {
   name = "keycloak"

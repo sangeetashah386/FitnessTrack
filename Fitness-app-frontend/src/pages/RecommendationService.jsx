@@ -34,7 +34,7 @@ const RecommendationService = () => {
 
       setRecommendations(recs);
     } catch (error) {
-      console.error("❌ Error fetching recommendations:", error);
+      console.error(" Error fetching recommendations:", error);
       setRecommendations([]);
     } finally {
       setLoading(false);
@@ -55,13 +55,34 @@ const RecommendationService = () => {
 
       fetchRecommendations();  // refresh list
     } catch (err) {
-      console.error("❌ Delete failed:", err);
+      console.error(" Delete failed:", err);
       alert("Failed to delete recommendation.");
     }
   };
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Box
+       sx={{
+          minHeight: "100vh",
+          backgroundImage: "url('/fitness-hero.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          }}
+       >
+                  {/* LIGHT OVERLAY */}
+          <Box
+             sx={{
+                minHeight: "100vh",
+                backgroundColor: "rgba(255, 255, 255, 0.6)", // 🔥 makes background light
+                backdropFilter: "blur(15px)",
+                WebkitBackdropFilter: "blur(15px)",
+                borderRadius: 3,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                p: 4,
+                }}
+             >
+{/*     <Box sx={{ p: 4 }}> */}
       <Button
         variant="outlined"
         color="primary"
@@ -114,7 +135,7 @@ const RecommendationService = () => {
                     Activity ID: {rec.activityId}
                   </Typography>
 
-                  {/* ⭐ Delete button */}
+                  {/*  Delete button */}
                   <Button
                     variant="outlined"
                     color="error"
@@ -136,6 +157,7 @@ const RecommendationService = () => {
           )}
         </Grid>
       )}
+      </Box>
     </Box>
   );
 };

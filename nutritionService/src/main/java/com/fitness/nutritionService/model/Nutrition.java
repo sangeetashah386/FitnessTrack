@@ -30,11 +30,7 @@ public class Nutrition {
     private Double dailyCalories;
     private List<String> dailyMeals;     // textual meal plan
     private List<String> recommendations;// recommendations from recommendation-service
-    private Integer age;
-    private Double weight;
-    private Double height;
-    private String gender;
-    private String activityLevel;
+
 
 
     private Map<String, Object> extraData;

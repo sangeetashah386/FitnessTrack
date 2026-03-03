@@ -23,10 +23,5 @@ public class PlanResponse {
     private Map<String, Object> extraData;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    //echo health metrics
-    private Integer age;
-    private Double weight;
-    private Double height;
-    private String gender;
-    private String activityLevel;
+
 }

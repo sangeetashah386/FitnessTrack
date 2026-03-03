@@ -29,7 +29,7 @@ eureka:
       #defaultZone: http://eureka-server:8761/eureka/
       defaultZone: http://eureka-server.fittrack.local:8761/eureka/
   instance:
-#    hostname: eureka-server
+    hostname: nutrition-service.fittrack.local
     prefer-ip-address: false
     instance-id: ${spring.application.name}:${server.port}
 rabbitmq:

@@ -20,7 +20,7 @@ const ActivityList = () => {
   const [recommendations, setRecommendations] = useState({});
   const userId = useSelector((state) => state.auth.userId);
 
-  // 🚀 Fetch user activities
+  //  Fetch user activities
   const fetchActivities = async () => {
     try {
       const response = await getUserActivities(userId);
@@ -43,10 +43,10 @@ const ActivityList = () => {
       await deleteActivity(id);
       alert("Activity deleted successfully!");
 
-      // 🚀 Update UI safely WITHOUT triggering errors
+      //  Update UI safely WITHOUT triggering errors
       setActivities((prev) => prev.filter((a) => a.id !== id));
 
-      // 🚀 Remove recommendation from UI as well
+      //  Remove recommendation from UI as well
       setRecommendations((prev) => {
         const updated = { ...prev };
         delete updated[id];
@@ -85,6 +85,17 @@ const ActivityList = () => {
                   {activity.type}
                 </Typography>
                 <Typography>Duration: {activity.duration} min</Typography>
+                {activity.distance && (
+                    <Typography>Distance: {activity.distance} km</Typography>
+                )}
+
+                {activity.pace && (
+                  <Typography>Pace: {activity.pace} min/km</Typography>
+                )}
+
+                {activity.averageHeartRate && (
+                  <Typography>Avg HR: {activity.averageHeartRate} bpm</Typography>
+                )}
                 <Typography>Calories: {activity.caloriesBurned}</Typography>
 
                 <Button

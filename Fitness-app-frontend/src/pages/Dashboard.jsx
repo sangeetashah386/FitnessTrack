@@ -34,6 +34,10 @@ const Dashboard = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        px: 2,
       }}
     >
       {/* LIGHT OVERLAY */}
@@ -42,7 +46,11 @@ const Dashboard = () => {
           minHeight: "100vh",
           backgroundColor: "rgba(255, 255, 255, 0.85)", // 🔥 makes background light
           backdropFilter: "blur(3px)",
-          p: 4,
+          borderRadius: 5,
+          boxShadow: "0 15px 40px rgba(0,0,0,0.2)",
+          p: 6,
+          textAlign: "center",
+
         }}
       >
         <Typography
@@ -55,28 +63,34 @@ const Dashboard = () => {
           🌟 FitTrack Dashboard
         </Typography>
 
-        <Grid container spacing={4} justifyContent="center">
+        <Grid container spacing={5} justifyContent="center">
           {sections.map((s) => (
             <Grid item xs={12} sm={6} md={4} key={s.path}>
               <Card
                 sx={{
                   textAlign: "center",
-                  borderRadius: 4,
+                  borderRadius: 5,
                   background: "rgba(255,255,255,0.95)",
-                  boxShadow: "0 8px 25px rgba(0,0,0,0.1)",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
                   transition: "0.3s ease",
+                  height: 220,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  px: 3,
                   "&:hover": {
                     transform: "translateY(-6px)",
                     boxShadow: "0 12px 30px rgba(0,0,0,0.15)",
                   },
                 }}
               >
-                <CardContent>
+                <CardContent sx={{ width: "100%" }}>
                   <Typography sx={{ mb: 2, color: "#1976d2" }}>
                     {s.icon}
                   </Typography>
 
-                  <Typography variant="h6" fontWeight={600} mb={2}>
+                  <Typography variant="h6" fontWeight={600} mb={3}>
                     {s.title}
                   </Typography>
 
@@ -86,6 +100,7 @@ const Dashboard = () => {
                     sx={{
                       borderRadius: 20,
                       px: 4,
+                      py: 1,
                       background:
                         "linear-gradient(135deg, #42a5f5, #478ed1)",
                     }}

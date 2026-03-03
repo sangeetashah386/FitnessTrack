@@ -12,8 +12,17 @@ const UserProfile = () => {
   const [avatar, setAvatar] = useState(null);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  //const userId = localStorage.getItem("userId");
   const userId = useSelector((s) => s.auth.userId);
+  console.log("Redux userId:", userId);
 
+  // Load saved avatar from localStorage
+  useEffect(() => {
+   const savedPic = localStorage.getItem("profilePic");
+   if (savedPic) setAvatar(savedPic);
+   }, []);
+
+  // Fetch user profile
   useEffect(() => {
     if (!userId) return;
     getUserProfile(userId).then((res) => setUser(res.data));
@@ -33,14 +42,23 @@ const hasActivities = Array.isArray(user?.activities) && user.activities.length 
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (ev) => setAvatar(ev.target.result);
+      reader.onload = (ev) => {
+        setAvatar(ev.target.result);
+        localStorage.setItem("profilePic", ev.target.result);
+        };
+
       reader.readAsDataURL(file);
       setSuccess(true);
     }
   };
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Box
+        sx={{
+            p: 4,
+            minHeight: "100vh",
+            background: "linear-gradient(to bottom right, #f7f9fc, #eef2f7)"
+        }}>
       <Button
         variant="outlined"
         startIcon={<ArrowBackIcon />}
@@ -50,7 +68,14 @@ const hasActivities = Array.isArray(user?.activities) && user.activities.length 
         Back to Dashboard
       </Button>
 
-      <Card sx={{ p: 3, borderRadius: 3, boxShadow: 4 }}>
+      <Card
+        sx={{
+            p: 3,
+            borderRadius: 3,
+            boxShadow: 4,
+            backdropFilter: "blur(10px)",
+            background: "rgba(255, 255, 255, 0.7)"
+             }}>
         <CardContent>
           <Box display="flex" alignItems="center" gap={3}>
             <Avatar src={avatar || "/default-avatar.png"} sx={{ width: 100, height: 100 }} />
@@ -124,12 +149,6 @@ const hasActivities = Array.isArray(user?.activities) && user.activities.length 
 ) : (
   <Typography color="textSecondary">No recent activities found.</Typography>
 )}
-
-
-
-  
-
-
 
       <Snackbar
         open={success}

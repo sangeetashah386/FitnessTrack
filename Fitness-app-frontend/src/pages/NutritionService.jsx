@@ -66,7 +66,7 @@ const NutritionService = () => {
 
       setAiPlansMap(aiMap);
     } catch (err) {
-      console.error("❌ Failed to load nutrition plans", err);
+      console.error(" Failed to load nutrition plans", err);
     } finally {
       setLoading(false);
     }
@@ -122,7 +122,28 @@ const NutritionService = () => {
   };
 
   return (
-    <Box sx={{ p: 4, display: "flex", justifyContent: "center" }}>
+    <Box
+        sx={{
+            minHeight: "100vh",
+            backgroundImage: "url('/fitness-hero.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            }}
+        >
+                  {/* LIGHT OVERLAY */}
+            <Box
+               sx={{
+                 minHeight: "100vh",
+                 backgroundColor: "rgba(255, 255, 255, 0.6)", // 🔥 makes background light
+                 backdropFilter: "blur(15px)",
+                 WebkitBackdropFilter: "blur(15px)",
+                 borderRadius: 3,
+                 boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                 p: 4,
+                 }}
+               >
+{/*     <Box sx={{ p: 4, display: "flex", justifyContent: "center" }}> */}
       <Paper sx={{ width: "100%", maxWidth: 1200, p: 4 }}>
 
         {/* BACK */}
@@ -299,6 +320,7 @@ const NutritionService = () => {
           )}
         </Paper>
       </Paper>
+      </Box>
     </Box>
   );
 };

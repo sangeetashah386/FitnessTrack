@@ -3,7 +3,25 @@ import React, { useState } from "react";
 import { addActivity } from "../services/api";
 
 const ActivityForm = ({ onActivityAdded }) => {
-  const [activity, setActivity] = useState({ type: "RUNNING", distance: "",averageHeartRate: "", caloriesBurned: "", startTime: "", endTime: "", });
+ // const [activity, setActivity] = useState({ type: "RUNNING", distance: "",averageHeartRate: "", caloriesBurned: "", startTime: "", endTime: "", });
+  const initialState = {
+      type: "RUNNING",
+      distance: "",
+      averageHeartRate: "",
+      caloriesBurned: "",
+      startTime: "",
+      endTime: "",
+  };
+
+  const [activity, setActivity] = useState(initialState);
+
+
+ // const [activity, setActivity] = useState(initialState);
+ // const toLocalDateTime = (value) => { if (!value) return null; return value + ":00";  };
+ const formatForBackend = (value) => {
+     if (!value) return null;
+     return value.length === 16 ? value + ":00" : value;
+   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,19 +30,50 @@ const ActivityForm = ({ onActivityAdded }) => {
 //         ...activity,
 //         startTime: new Date().toISOString(),
 //       };
-    const payload = {
+     if (!activity.startTime || !activity.endTime) {
+          alert("Please select start and end time.");
+          return;
+     }
+
+     if (new Date(activity.endTime) <= new Date(activity.startTime)) {
+          alert("End time must be after start time.");
+          return;
+     }
+
+     const payload = {
           ...activity,
-          distance: activity.distance ? Number(activity.distance) : null,
-          averageHeartRate: activity.averageHeartRate
+
+          // 🔵 UPDATED: safer number conversion
+     distance: activity.distance ? Number(activity.distance) : null,
+     averageHeartRate: activity.averageHeartRate
             ? Number(activity.averageHeartRate)
             : null,
-          caloriesBurned: Number(activity.caloriesBurned),
-    };
+     caloriesBurned: activity.caloriesBurned
+            ? Number(activity.caloriesBurned)
+            : 0,
 
-    await addActivity(payload);
-    onActivityAdded?.();
-    setActivity({ type: "RUNNING", distance: "",averageHeartRate: "", caloriesBurned: "", startTime: "", endTime: "", });
-  };
+          // 🔵 UPDATED: clean formatting
+     startTime: formatForBackend(activity.startTime),
+     endTime: formatForBackend(activity.endTime),
+     };
+
+     try {
+        await addActivity(payload);
+        onActivityAdded?.();
+
+          // 🔵 UPDATED: reset using initialState
+          setActivity(initialState);
+     } catch (error) {
+          console.error("Error saving activity:", error);
+          alert("Failed to save activity.");
+        }
+     };
+
+
+//     await addActivity(payload);
+//     onActivityAdded?.();
+//     setActivity({ type: "RUNNING", distance: "",averageHeartRate: "", caloriesBurned: "", startTime: "", endTime: "", });
+//   };
   const isDistanceBased = ["RUNNING", "WALKING", "HIKING", "CYCLING", "SWIMMING", "SKIING"]
       .includes(activity.type);
   return (
@@ -40,7 +89,7 @@ const ActivityForm = ({ onActivityAdded }) => {
           <MenuItem value="CYCLING">Cycling</MenuItem>
           <MenuItem value="SWIMMING">Swimming</MenuItem>
           <MenuItem value="YOGA">Yoga</MenuItem>
-          <MenuItem value="STRETCHING">Stretching</MenuItem>
+          <MenuItem value="STRECTCHING">Stretching</MenuItem>
           <MenuItem value="OTHER">Other</MenuItem>
           
         </Select>

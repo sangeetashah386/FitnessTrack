@@ -58,7 +58,7 @@ variable "gemini_api_key_ssm_param" {
 
 variable "gemini_api_url" {
   type    = string
-  default = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="
+  default = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key="
 }
 
 

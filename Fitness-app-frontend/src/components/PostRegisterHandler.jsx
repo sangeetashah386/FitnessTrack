@@ -20,7 +20,7 @@ const PostRegisterHandler = () => {
       if (loginInProgress || !oauthToken || hasRun) return;
 
       //if (loginInProgress || !token) return;
-
+   //   if (localStorage.getItem("token")) return;
       const decoded = jwtDecode(oauthToken);
 
       const keycloakId = decoded.sub;

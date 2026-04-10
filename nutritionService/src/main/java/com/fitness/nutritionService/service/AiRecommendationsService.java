@@ -192,76 +192,84 @@ public class AiRecommendationsService {
      */
     private String createPromptForNutrition(Nutrition nutrition) {
         return String.format("""
-        Analyze this nutrition profile and provide a detailed meal plan in the following EXACT JSON format:
-        {
-            "summary": "Brief overview of the nutrition strategy and approach",
-            "suggestedCalories": 2000,
-            "dailyMeals": [
-                {
-                    "meal": "Breakfast",
-                    "description": "Detailed meal description with ingredients",
-                    "calories": "400"
-                },
-                {
-                    "meal": "Lunch",
-                    "description": "Detailed meal description with ingredients",
-                    "calories": "550"
-                },
-                {
-                    "meal": "Snack",
-                    "description": "Detailed snack description",
-                    "calories": "200"
-                },
-                {
-                    "meal": "Dinner",
-                    "description": "Detailed meal description with ingredients",
-                    "calories": "650"
-                }
-            ],
-            "suggestedMeals": [
-                {
-                    "type": "Alternative Breakfast",
-                    "suggestion": "Detailed alternative meal idea"
-                },
-                {
-                    "type": "Alternative Lunch",
-                    "suggestion": "Detailed alternative meal idea"
-                },
-                {
-                    "type": "Alternative Dinner",
-                    "suggestion": "Detailed alternative meal idea"
-                }
-            ],
-            "recommendations": [
-                "Practical nutritional insight 1",
-                "Practical nutritional insight 2",
-                "Practical nutritional insight 3",
-                "Practical nutritional insight 4"
-            ],
-            "safetyGuidelines": [
-                "Important safety consideration 1",
-                "Important safety consideration 2",
-                "Important safety consideration 3"
-            ]
-        }
-        
-        Analyze this nutrition profile:
-        User ID: %s
-        Goal: %s
-        Daily Calorie Target: %.0f
-        Dietary Preferences: %s
-        
-        Provide a detailed, personalized meal plan that:
-        1. Meets or is close to the daily calorie target
-        2. Aligns with the user's goal (%s)
-        3. Respects dietary preferences and restrictions
-        4. Includes balanced macronutrients
-        5. Provides practical, actionable advice
-        6. Suggests alternative meal options for variety
-        7. Includes important safety considerations
-        
-        Ensure the response follows the EXACT JSON format shown above.
-        """,
+                        Analyze this nutrition profile and provide a detailed meal plan in the following EXACT JSON format:
+                        {
+                            "summary": "Brief overview of the nutrition strategy and approach",
+                            "suggestedCalories": 2000,
+                            "dailyMeals": [
+                                {
+                                    "meal": "Breakfast",
+                                    "description": "Detailed meal description with ingredients",
+                                    "calories": "400"
+                                },
+                                {
+                                    "meal": "Lunch",
+                                    "description": "Detailed meal description with ingredients",
+                                    "calories": "550"
+                                },
+                                {
+                                    "meal": "Snack",
+                                    "description": "Detailed snack description",
+                                    "calories": "200"
+                                },
+                                {
+                                    "meal": "Dinner",
+                                    "description": "Detailed meal description with ingredients",
+                                    "calories": "650"
+                                }
+                            ],
+                            "suggestedMeals": [
+                                {
+                                    "type": "Alternative Breakfast",
+                                    "suggestion": "Detailed alternative meal idea"
+                                },
+                                {
+                                    "type": "Alternative Lunch",
+                                    "suggestion": "Detailed alternative meal idea"
+                                },
+                                {
+                                    "type": "Alternative Dinner",
+                                    "suggestion": "Detailed alternative meal idea"
+                                }
+                            ],
+                            "recommendations": [
+                                "Write each recommendation as a complete, well-phrased sentence (not fragments)",
+                                "Ensure clarity and professional tone",
+                                "Avoid repetition",
+                                "Keep advice practical and actionable"
+                            ],
+                            "safetyGuidelines": [
+                                "Write clear, concise safety advice in full sentences",
+                                "Avoid vague statements",
+                                "Ensure medically safe and general guidance"
+                                
+                            ]
+                        }
+                        IMPORTANT INSTRUCTIONS:
+                        - All text fields must be written in natural, human-like paragraphs.
+                        - Do NOT use bullet points, numbered lists, or fragmented phrases inside JSON values.
+                        - Maintain a professional and clear tone.
+                        - Ensure smooth transitions within descriptions.
+                        - Keep responses realistic and practical.
+                                                
+                                
+                        Analyze this nutrition profile:
+                        User ID: %s
+                        Goal: %s
+                        Daily Calorie Target: %.0f
+                        Dietary Preferences: %s
+                                
+                        Provide a detailed, personalized meal plan that:
+                        1. Meets or is close to the daily calorie target
+                        2. Aligns with the user's goal (%s)
+                        3. Respects dietary preferences and restrictions
+                        4. Includes balanced macronutrients
+                        5. Provides practical, actionable advice
+                        6. Suggests alternative meal options for variety
+                        7. Includes important safety considerations
+                                
+                        Ensure the response follows the EXACT JSON format shown above.
+                        """,
                 nutrition.getUserId(),
                 nutrition.getGoal(),
                 nutrition.getDailyCalories(),

@@ -44,7 +44,7 @@ const Dashboard = () => {
       <Box
         sx={{
           minHeight: "100vh",
-          backgroundColor: "rgba(255, 255, 255, 0.85)", // 🔥 makes background light
+          backgroundColor: "rgba(255, 255, 255, 0.85)", //  makes background light
           backdropFilter: "blur(3px)",
           borderRadius: 5,
           boxShadow: "0 15px 40px rgba(0,0,0,0.2)",

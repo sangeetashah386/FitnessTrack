@@ -9,5 +9,6 @@ export const authConfig = {
     scope: 'openid profile email offline_access phone',
     loadUserInfo: true,
     pkce: true,
+    autoLogin: false,
     onRefreshTokenExpire: (event) => event.logIn(),
   }

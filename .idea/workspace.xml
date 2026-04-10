@@ -5,77 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4af1af57-fb37-4dd7-81a2-5fa1ad360cbe" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Fitness-app-frontend/nginx.conf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/components/AuthInitializer.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/RegisterPage.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/keycloak/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/acm.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/efs.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/keycloak-postgres.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/rds.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/route53.tf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/App.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/authConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/authConfig.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/components/ActivityDetail.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/components/ActivityDetail.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/components/ActivityForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/components/ActivityForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/components/ActivityList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/components/ActivityList.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/components/PostRegisterHandler.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/components/PostRegisterHandler.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/components/RecommendationDetail.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/components/RecommendationDetail.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/components/UserProfile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/components/UserProfile.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/ActivitiesPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/ActivitiesPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/Dashboard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/NutritionAiPlans.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/NutritionAiPlans.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/NutritionService.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/NutritionService.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/RecommendationService.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/pages/RecommendationService.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/routes/ProtectedRoute.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/routes/ProtectedRoute.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/services/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/services/api.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fitness-app-frontend/src/store/authSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/Fitness-app-frontend/src/store/authSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/dto/ActivityRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/dto/ActivityRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/dto/ActivityResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/dto/ActivityResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/mapper/ActivityMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/mapper/ActivityMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/model/Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/model/Activity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/service/impl/ActivityServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/activityService/src/main/java/com/fitness/activityService/service/impl/ActivityServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/activityService/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/activityService/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configserver/src/main/resources/config/activity-service.yml" beforeDir="false" afterPath="$PROJECT_DIR$/configserver/src/main/resources/config/activity-service.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configserver/src/main/resources/config/api-gateway.yml" beforeDir="false" afterPath="$PROJECT_DIR$/configserver/src/main/resources/config/api-gateway.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configserver/src/main/resources/config/nutrition-service.yml" beforeDir="false" afterPath="$PROJECT_DIR$/configserver/src/main/resources/config/nutrition-service.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configserver/src/main/resources/config/recommendation-service.yml" beforeDir="false" afterPath="$PROJECT_DIR$/configserver/src/main/resources/config/recommendation-service.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configserver/src/main/resources/config/user-service.yml" beforeDir="false" afterPath="$PROJECT_DIR$/configserver/src/main/resources/config/user-service.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eureka/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/eureka/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/src/main/java/com/fitness/gateway/config/KeycloakUserSyncFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/com/fitness/gateway/config/KeycloakUserSyncFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway/src/main/java/com/fitness/gateway/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/java/com/fitness/gateway/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/dto/PlanRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/dto/PlanRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/dto/PlanResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/dto/PlanResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/helper/UserProfileHelper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/mapper/NutritionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/mapper/NutritionMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/model/Nutrition.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/model/Nutrition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/service/impl/NutritionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/service/impl/NutritionServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recommendationService/src/main/java/com/fitness/recommendationService/model/Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/recommendationService/src/main/java/com/fitness/recommendationService/model/Activity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/recommendationService/src/main/java/com/fitness/recommendationService/service/ActivityRecommendationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/recommendationService/src/main/java/com/fitness/recommendationService/service/ActivityRecommendationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/.terraform.lock.hcl" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/.terraform.lock.hcl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/alb.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/alb.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/cloudMap.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/cloudMap.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/ecr.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/ecr.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/ecs-services.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/ecs-services.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/ecs.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/ecs.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/locals.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/locals.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/outputs.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/outputs.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/security_groups.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/security_groups.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/service_discovery.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/service_discovery.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/taskDefination.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/taskDefination.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/terraform.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/terraform.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/service/AiRecommendationsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/nutritionService/src/main/java/com/fitness/nutritionService/service/AiRecommendationsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/terraform/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/terraform/variables.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/variables.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/vpc-endpoints.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/vpc-endpoints.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/terraform/vpc.tf" beforeDir="false" afterPath="$PROJECT_DIR$/terraform/vpc.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/fitness/userService/dto/ActivityRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/fitness/userService/dto/ActivityRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userService/src/main/java/com/fitness/userService/dto/ActivityResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/userService/src/main/java/com/fitness/userService/dto/ActivityResponse.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
